@@ -1,0 +1,32 @@
+#include "mainwindow.h"
+
+#include "qtpong.h"
+
+MainWindow::MainWindow(const Stage& stage, QtPong* pong)
+    : QMainWindow(nullptr), p_pong{pong}
+{
+    const auto& pixmap = stage.getPixmap();
+    auto scene = stage.bounds();
+    const auto data = pixmap.data();
+    m_pixmapScene = QImage(data, scene.size.width, scene.size.height,
+                           QImage::Format_RGBA8888);
+    m_centralWidget.setMinimumSize(scene.size.width, scene.size.height);
+    setCentralWidget(&m_centralWidget);
+}
+
+void MainWindow::renderPong()
+{
+    m_centralWidget.setPixmap(
+        QPixmap::fromImage(m_pixmapScene)
+            .scaled(width(), height(), Qt::KeepAspectRatio));
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    p_pong->keyPressEvent(event);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* event)
+{
+    p_pong->keyReleaseEvent(event);
+}
