@@ -27,36 +27,39 @@ class Pong
   public:
     constexpr Pong()
     {
+        const int LEFT_SIDE = 0;
+        const int RIGHT_SIDE = m_stage.bounds().width;
+        const int TOP_SIDE = 0;
+        const int BOTTOM_SIDE = m_stage.bounds().height;
         const int CENTERED_PADDLE_Y_COORDINATE =
-            m_stage.bounds().height() / 2 - PADDLE_HEIGHT / 2;
+            BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
         constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
-        Rectangle<int> paddleExtent{
-            m_stage.bounds().topLeft().x + PADDLE_X_COORDINATE_MARGIN,
-            CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH, PADDLE_HEIGHT};
+        Rectangle<int> paddleExtent{LEFT_SIDE + PADDLE_X_COORDINATE_MARGIN,
+                                    CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH,
+                                    PADDLE_HEIGHT};
         m_paddles.left = Paddle<int>(paddleExtent);
         m_renderables.push_back(m_paddles.left);
 
         Rectangle<int> paddle2Extent{
-            m_stage.bounds().topRight().x - PADDLE_X_COORDINATE_MARGIN -
-                PADDLE_WIDTH,
+            RIGHT_SIDE - PADDLE_X_COORDINATE_MARGIN - PADDLE_WIDTH,
             CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH, PADDLE_HEIGHT};
         paddle2Extent.rotate(std::numbers::pi / 4);
         m_paddles.right = Paddle(paddle2Extent);
         m_renderables.push_back(m_paddles.right);
 
-        Rectangle<int> ballExtent{m_stage.bounds().center(), BALL_SIDE_LENGTH,
-                                  BALL_SIDE_LENGTH};
+        Rectangle<int> ballExtent{RIGHT_SIDE / 2 - BALL_SIDE_LENGTH / 2,
+                                  BOTTOM_SIDE / 2 - BALL_SIDE_LENGTH / 2,
+                                  BALL_SIDE_LENGTH, BALL_SIDE_LENGTH};
         Speed<float> ballInitialSpeed{2, 1};
         m_balls[0].setPlacement(ballExtent);
         m_balls[0].setSpeed(ballInitialSpeed);
         m_renderables.push_back(m_balls[0]);
 
-        Rectangle topWallExtent{0, 0, m_stage.bounds().width(), 5};
+        Rectangle topWallExtent{0, 0, RIGHT_SIDE, 5};
         m_walls.top = Paddle(topWallExtent);
         m_renderables.push_back(m_walls.top);
 
-        Rectangle bottomWallExtent{0, m_stage.bounds().bottomLeft().y - 5,
-                                   m_stage.bounds().width(), 5};
+        Rectangle bottomWallExtent{0, BOTTOM_SIDE - 5, RIGHT_SIDE, 5};
         m_walls.bottom = Paddle(bottomWallExtent);
         m_renderables.push_back(m_walls.bottom);
     };

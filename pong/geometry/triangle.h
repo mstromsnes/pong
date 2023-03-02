@@ -4,6 +4,7 @@
 #include "vector.h"
 
 #include <algorithm>
+#include <array>
 template <typename T> class Triangle
 {
   public:

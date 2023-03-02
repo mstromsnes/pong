@@ -67,10 +67,9 @@ void Pong::pollKeys()
 
 void Pong::movePaddles(KeyPress press)
 {
-    const int playable_area_top =
-        m_stage.bounds().topLeft().y + m_walls.top.getHitbox().height();
+    const int playable_area_top = 0 + m_walls.top.getHitbox().height();
     const int playable_area_bottom =
-        m_stage.bounds().bottomLeft().y - m_walls.bottom.getHitbox().height();
+        m_stage.bounds().height - m_walls.bottom.getHitbox().height();
     switch (press)
     {
     case KeyPress::P1Down:

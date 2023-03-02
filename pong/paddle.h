@@ -20,22 +20,12 @@ template <typename T> class Paddle : public Collider<T>, public Renderable
         switch (dir)
         {
         case PaddleDirection::Down:
-            if (placement.bottomLeft().y < stage.bounds().bottomLeft().y)
-            {
-                placement.translate(Vector2D<float>(0, speed));
-                collision = false;
-            }
-            else
-                collision = true;
+            placement.translate(Vector2D<float>(0, speed));
+            collision = false;
             break;
         case PaddleDirection::Up:
-            if (placement.topLeft().y > stage.bounds().topLeft().y)
-            {
-                placement.translate(Vector2D<float>(0, -speed));
-                collision = false;
-            }
-            else
-                collision = true;
+            placement.translate(Vector2D<float>(0, -speed));
+            collision = false;
             break;
         default:
             break;
