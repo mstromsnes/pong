@@ -44,8 +44,6 @@ qt_add_executable(pong WIN32
     main.cpp
     qtpong.cpp
     mainwindow.cpp
-    pong/paddle.cpp
-    pong/ball.cpp
     pong/pong.cpp
 )
 

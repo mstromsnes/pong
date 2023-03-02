@@ -5,35 +5,36 @@
 
 enum class CollisionType { Horizontal, Vertical, Invalid };
 
-class Collider
+template <typename T> class Collider
 {
   public:
     constexpr Collider(){};
     virtual ~Collider() = default;
-    virtual const Extent& getHitbox() const = 0;
+    virtual const Rectangle<T>& getHitbox() const = 0;
     virtual void collide(CollisionType) = 0;
-    constexpr static bool overlap(const Extent& hitBox1, const Extent& hitBox2)
+    constexpr static bool overlap(const Rectangle<T>& hitBox1,
+                                  const Rectangle<T>& hitBox2)
     {
-        if (hitBox1.left() > hitBox2.right() ||
-            hitBox2.left() > hitBox1.right())
+        if (hitBox1.topLeft().x > hitBox2.topRight().x ||
+            hitBox2.topLeft().x > hitBox1.topRight().x)
             return false;
-        if (hitBox1.top() > hitBox2.bottom() ||
-            hitBox2.top() > hitBox1.bottom())
+        if (hitBox1.topLeft().y > hitBox2.bottomLeft().y ||
+            hitBox2.topLeft().y > hitBox1.bottomLeft().y)
             return false;
         return true;
     };
-    constexpr static CollisionType getType(const Extent& hitBox1,
-                                           const Extent& hitBox2)
+    constexpr static CollisionType getType(const Rectangle<T>& hitBox1,
+                                           const Rectangle<T>& hitBox2)
     {
-        if ((hitBox1.right() - hitBox2.left() == 0 ||
-             hitBox2.right() - hitBox1.left() == 0) &&
-            (hitBox1.right() - hitBox2.right() <= hitBox1.size.width ||
-             hitBox1.right() - hitBox2.right() <= hitBox2.size.width))
+        if ((hitBox1.topRight().x - hitBox2.topLeft().x == 0 ||
+             hitBox2.topRight().x - hitBox1.topLeft().x == 0) &&
+            (hitBox1.topRight().x - hitBox2.topRight().x <= hitBox1.width() ||
+             hitBox1.topRight().x - hitBox2.topRight().x <= hitBox2.width()))
             return CollisionType::Vertical;
-        if ((hitBox1.top() - hitBox2.bottom() == 0 ||
-             hitBox2.top() - hitBox1.bottom() == 0) &&
-            (hitBox1.top() - hitBox2.top() <= hitBox1.size.height ||
-             hitBox1.top() - hitBox2.top() <= hitBox2.size.height))
+        if ((hitBox1.topLeft().y - hitBox2.bottomLeft().y == 0 ||
+             hitBox2.topLeft().y - hitBox1.bottomLeft().y == 0) &&
+            (hitBox1.topLeft().y - hitBox2.topLeft().y <= hitBox1.height() ||
+             hitBox1.topLeft().y - hitBox2.topLeft().y <= hitBox2.height()))
             return CollisionType::Horizontal;
         return CollisionType::Invalid;
     }
