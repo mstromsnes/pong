@@ -22,14 +22,17 @@ void Pong::collision()
 {
     for (auto& ball : m_balls)
     {
-        if (Collider::overlap(ball.getHitbox(), m_paddles.left.getHitbox()) ||
-            Collider::overlap(ball.getHitbox(), m_paddles.right.getHitbox()))
+        if (Collider<int>::overlap(ball.getHitbox(),
+                                   m_paddles.left.getHitbox()) ||
+            Collider<int>::overlap(ball.getHitbox(),
+                                   m_paddles.right.getHitbox()))
         {
             ball.collide(CollisionType::Vertical);
         }
-        else if (Collider::overlap(ball.getHitbox(), m_walls.top.getHitbox()) ||
-                 Collider::overlap(ball.getHitbox(),
-                                   m_walls.bottom.getHitbox()))
+        else if (Collider<int>::overlap(ball.getHitbox(),
+                                        m_walls.top.getHitbox()) ||
+                 Collider<int>::overlap(ball.getHitbox(),
+                                        m_walls.bottom.getHitbox()))
         {
             ball.collide(CollisionType::Horizontal);
         }
@@ -64,10 +67,9 @@ void Pong::pollKeys()
 
 void Pong::movePaddles(KeyPress press)
 {
-    const int playable_area_top =
-        m_stage.bounds().top() + m_walls.top.getHitbox().size.height;
+    const int playable_area_top = 0 + m_walls.top.getHitbox().height();
     const int playable_area_bottom =
-        m_stage.bounds().bottom() - m_walls.bottom.getHitbox().size.height;
+        m_stage.bounds().height - m_walls.bottom.getHitbox().height();
     switch (press)
     {
     case KeyPress::P1Down:

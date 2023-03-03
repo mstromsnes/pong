@@ -6,7 +6,7 @@ QtPong::QtPong() : m_window{m_pong.getStage(), this}, m_loopTimer{this}
 {
     m_window.resize(768, 768);
     m_window.show();
-    m_loopTimer.setInterval(1000.0f / 100.0f);
+    m_loopTimer.setInterval(1000.0f / 75.0f);
     m_loopTimer.callOnTimeout([&]() {
         m_pong.eventLoop();
         render();

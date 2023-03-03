@@ -7,39 +7,59 @@
 #include <memory>
 enum class PaddleDirection { Up = 0, Down = 1 };
 
-class Paddle : public Collider, public Renderable
+template <typename T> class Paddle : public Collider<T>, public Renderable
 {
   public:
     constexpr Paddle()
-        : Collider(),
+        : Collider<T>(),
           Renderable(), placement{0, 0, 0, 0}, prev_placement{placement} {};
-    constexpr Paddle(Extent pos)
-        : Collider(), Renderable(), placement{pos}, prev_placement{pos} {};
-    void move(PaddleDirection dir, int speed, const Stage& stage);
-
-    [[nodiscard]] const Position& getPosition() const noexcept
+    constexpr Paddle(Rectangle<T> pos)
+        : Collider<T>(), Renderable(), placement{pos}, prev_placement{pos} {};
+    void move(PaddleDirection dir, T speed, const Stage& stage)
     {
-        return placement.pos;
-    };
-    [[nodiscard]] const Size& getSize() const noexcept
+        switch (dir)
+        {
+        case PaddleDirection::Down:
+            placement.translate(Vector2D<float>(0, speed));
+            collision = false;
+            break;
+        case PaddleDirection::Up:
+            placement.translate(Vector2D<float>(0, -speed));
+            collision = false;
+            break;
+        default:
+            break;
+        }
+    }
+
+    [[nodiscard]] const Position<T>& getPosition() const noexcept
     {
-        return placement.size;
+        return placement.pos();
+    };
+    [[nodiscard]] const Size<T>& getSize() const noexcept
+    {
+        return placement.size();
     };
 
-    [[nodiscard]] const Extent& getHitbox() const noexcept override
+    [[nodiscard]] const Rectangle<T>& getHitbox() const noexcept override
     {
         return placement;
     };
     void collide(CollisionType) noexcept override{};
 
-    void render(Stage&) override;
-    void clear(Stage&) override;
+    void render(Stage& stage) override
+    {
+        clear(stage);
+        prev_placement = placement;
+        stage.fill(placement, Color(0x00, 0x00, 0xff));
+    }
+    void clear(Stage& stage) override { stage.fill(prev_placement, 0x0); }
     bool collided() { return collision; };
 
   private:
     bool collision = false;
-    Extent placement;
-    Extent prev_placement;
+    Rectangle<T> placement;
+    Rectangle<T> prev_placement;
 };
 
 #endif // PADDLE_H
