@@ -73,19 +73,19 @@ void Pong::movePaddles(KeyPress press)
     switch (press)
     {
     case KeyPress::P1Down:
-        if (m_paddles.left.getHitbox().bottomLeft().y < playable_area_bottom)
+        if (m_paddles.left.getHitbox().bottom() < playable_area_bottom)
             m_paddles.left.move(PaddleDirection::Down, 2, m_stage);
         break;
     case KeyPress::P1Up:
-        if (m_paddles.left.getHitbox().topLeft().y > playable_area_top)
+        if (m_paddles.left.getHitbox().top() > playable_area_top)
             m_paddles.left.move(PaddleDirection::Up, 2, m_stage);
         break;
     case KeyPress::P2Down:
-        if (m_paddles.right.getHitbox().bottomLeft().y < playable_area_bottom)
+        if (m_paddles.right.getHitbox().bottom() < playable_area_bottom)
             m_paddles.right.move(PaddleDirection::Down, 2, m_stage);
         break;
     case KeyPress::P2Up:
-        if (m_paddles.right.getHitbox().topLeft().y > playable_area_top)
+        if (m_paddles.right.getHitbox().top() > playable_area_top)
             m_paddles.right.move(PaddleDirection::Up, 2, m_stage);
         break;
     default:

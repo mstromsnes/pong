@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <numbers>
 template <typename T> struct Size
 {
@@ -68,27 +69,6 @@ template <typename T> class Rectangle
         });
         return lines;
     };
-    // [[nodiscard]] constexpr int left() const { return pos().x; };
-    // [[nodiscard]] constexpr int right() const { return pos().x + size.width;
-    // };
-    // [[nodiscard]] constexpr int top() const { return pos().y; };
-    // [[nodiscard]] constexpr int bottom() const
-    // {
-    //     return pos().y + size.height;
-    // };
-    [[nodiscard]] constexpr Position<T> topLeft() const { return pos(); };
-    [[nodiscard]] constexpr Position<T> topRight() const
-    {
-        return m_rotationAroundCenterMatrix * unrotatedTopRight();
-    };
-    [[nodiscard]] constexpr Position<T> bottomLeft() const
-    {
-        return m_rotationAroundCenterMatrix * unrotatedBottomLeft();
-    };
-    [[nodiscard]] constexpr Position<T> bottomRight() const
-    {
-        return m_rotationAroundCenterMatrix * unrotatedBottomRight();
-    };
     [[nodiscard]] constexpr Position<T> center() const
     {
         return Position{(unrotatedLeft() + unrotatedRight()) / 2,
@@ -132,14 +112,93 @@ template <typename T> class Rectangle
         Quadrilateral<T> rec{getCorners()};
         return rec.getTriangles();
     }
+    [[nodiscard]] constexpr T bottom() const
+    {
+        T max = 0;
+        return findExtremeHelper([&max](Position<T> pos) -> bool {
+                   if (pos.y > max)
+                   {
+                       max = pos.y;
+                       return true;
+                   }
+                   return false;
+               })
+            .y;
+    }
+    [[nodiscard]] constexpr T top() const
+    {
+        T min = static_cast<T>(INT_MAX);
+        return findExtremeHelper([&min](Position<T> pos) -> bool {
+                   if (pos.y < min)
+                   {
+                       min = pos.y;
+                       return true;
+                   }
+                   return false;
+               })
+            .y;
+    }
+    [[nodiscard]] constexpr T left() const
+    {
+        T min = static_cast<T>(INT_MAX);
+        return findExtremeHelper([&min](Position<T> pos) {
+                   if (pos.x < min)
+                   {
+                       min = pos.x;
+                       return true;
+                   }
+                   return false;
+               })
+            .x;
+    }
+    [[nodiscard]] constexpr int right() const
+    {
+        T max = 0;
+        return findExtremeHelper([&max](Position<T> pos) {
+                   if (pos.x > max)
+                   {
+                       max = pos.x;
+                       return true;
+                   }
+                   return false;
+               })
+            .x;
+    }
 
   private:
-    [[nodiscard]] constexpr T unrotatedLeft() const { return unrotatedPos.x; };
+    [[nodiscard]] constexpr Position<T>
+    findExtremeHelper(std::function<bool(Position<T>)> predicate) const
+    {
+        auto corners = getCorners();
+        int corner = 0;
+        for (int i = 0; i < corners.size(); i++)
+        {
+            if (predicate(corners[i]))
+            {
+                corner = i;
+            }
+        }
+        return corners[corner];
+    }
     [[nodiscard]] constexpr std::array<Position<T>, 4> getCorners() const
     {
         return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(),
                                           bottomLeft()};
     }
+    [[nodiscard]] constexpr Position<T> topLeft() const { return pos(); };
+    [[nodiscard]] constexpr Position<T> topRight() const
+    {
+        return m_rotationAroundCenterMatrix * unrotatedTopRight();
+    };
+    [[nodiscard]] constexpr Position<T> bottomLeft() const
+    {
+        return m_rotationAroundCenterMatrix * unrotatedBottomLeft();
+    };
+    [[nodiscard]] constexpr Position<T> bottomRight() const
+    {
+        return m_rotationAroundCenterMatrix * unrotatedBottomRight();
+    };
+    [[nodiscard]] constexpr T unrotatedLeft() const { return unrotatedPos.x; };
     [[nodiscard]] constexpr T unrotatedRight() const
     {
         return unrotatedPos.x + m_size.width;

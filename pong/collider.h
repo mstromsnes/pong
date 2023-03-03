@@ -15,28 +15,13 @@ template <typename T> class Collider
     constexpr static bool overlap(const Rectangle<T>& hitBox1,
                                   const Rectangle<T>& hitBox2)
     {
-        if (hitBox1.topLeft().x > hitBox2.topRight().x ||
-            hitBox2.topLeft().x > hitBox1.topRight().x)
+        if (hitBox1.left() > hitBox2.right() ||
+            hitBox2.left() > hitBox1.right())
             return false;
-        if (hitBox1.topLeft().y > hitBox2.bottomLeft().y ||
-            hitBox2.topLeft().y > hitBox1.bottomLeft().y)
+        if (hitBox1.top() > hitBox2.bottom() ||
+            hitBox2.top() > hitBox1.bottom())
             return false;
         return true;
     };
-    constexpr static CollisionType getType(const Rectangle<T>& hitBox1,
-                                           const Rectangle<T>& hitBox2)
-    {
-        if ((hitBox1.topRight().x - hitBox2.topLeft().x == 0 ||
-             hitBox2.topRight().x - hitBox1.topLeft().x == 0) &&
-            (hitBox1.topRight().x - hitBox2.topRight().x <= hitBox1.width() ||
-             hitBox1.topRight().x - hitBox2.topRight().x <= hitBox2.width()))
-            return CollisionType::Vertical;
-        if ((hitBox1.topLeft().y - hitBox2.bottomLeft().y == 0 ||
-             hitBox2.topLeft().y - hitBox1.bottomLeft().y == 0) &&
-            (hitBox1.topLeft().y - hitBox2.topLeft().y <= hitBox1.height() ||
-             hitBox1.topLeft().y - hitBox2.topLeft().y <= hitBox2.height()))
-            return CollisionType::Horizontal;
-        return CollisionType::Invalid;
-    }
 };
 #endif // COLLIDER_H
