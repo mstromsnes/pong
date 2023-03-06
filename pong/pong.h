@@ -26,12 +26,12 @@ class Pong
 {
   public:
     constexpr Pong()
-        : m_paddles{Paddle<int>{leftPaddleRectangle(), 10},
-                    Paddle<int>{rightPaddleRectangle(), 10}},
-          m_walls{
-              Paddle<int>{topWallRectangle(), std::numeric_limits<int>::max()},
-              Paddle<int>{bottomWallRectangle(),
-                          std::numeric_limits<int>::max()}},
+        : m_paddles{Paddle<int>{leftPaddleRectangle()},
+                    Paddle<int>{rightPaddleRectangle()}},
+          m_walls{Paddle<int>{topWallRectangle()},
+                  Paddle<int>{
+                      bottomWallRectangle(),
+                  }},
           m_balls{makeBalls()}
     {
         m_renderables.push_back(m_paddles.left);
@@ -52,11 +52,10 @@ class Pong
     void keyRelease(KeyPress);
 
     void eventLoop();
+    void renderLoop();
     Stage& getStage() { return m_stage; };
 
   private:
-    // RenderStrategy m_renderer;
-    // KeyInputStrategy m_inputhandler;
     constexpr Rectangle<int> leftPaddleRectangle() const
     {
         const int LEFT_SIDE = 0;
@@ -106,6 +105,7 @@ class Pong
 
         return std::array{Ball<int>{ballRectangle(), ballInitialSpeed}};
     }
+    constexpr void drawHitboxNormals(Collider<int>&);
     Stage m_stage;
     Paddles<int> m_paddles;
     Walls<int> m_walls;
@@ -117,11 +117,14 @@ class Pong
         false};
     std::array<Ball<int>, 1> m_balls;
     std::vector<std::reference_wrapper<Renderable>> m_renderables;
+    bool m_debugMode = false;
 
     void moveBalls();
     void movePaddles(KeyPress);
+    void moveBall(KeyPress);
     void collision();
     void pollKeys();
+    constexpr void drawNormals();
     constexpr void updatePixmap();
 };
 

@@ -50,16 +50,16 @@ template <typename T> class Ball : public Collider<T>, public Renderable
 {
   public:
     constexpr Ball()
-        : m_placement{0, 0, 0, 0}, m_prevPlacement{0, 0, 0, 0},
-          m_origPlacement{0, 0, 0, 0}, m_speed{0, 0}, m_origSpeed{0, 0} {};
+        : m_placement{0, 0, 0, 0}, m_origPlacement{0, 0, 0, 0}, m_speed{0, 0},
+          m_origSpeed{0, 0} {};
 
     constexpr Ball(Rectangle<T> placement, Speed<float> speed)
-        : m_placement{placement}, m_prevPlacement{placement},
-          m_origPlacement{placement}, m_speed{speed}, m_origSpeed{speed} {};
-    void move()
+        : m_placement{placement}, m_origPlacement{placement}, m_speed{speed},
+          m_origSpeed{speed} {};
+    void move(Stage& stage) { m_placement.translate(m_speed.velocity); }
+    void move_custom(Vector2D<float> direction)
     {
-        m_prevPlacement = m_placement;
-        m_placement.translate(m_speed.velocity);
+        m_placement.translate(direction);
     }
     [[nodiscard]] const Position<T>& getPosition() const noexcept
     {
@@ -93,7 +93,6 @@ template <typename T> class Ball : public Collider<T>, public Renderable
     constexpr void setPlacement(Rectangle<T> placement)
     {
         m_placement = placement;
-        m_prevPlacement = placement;
         m_origPlacement = placement;
     };
     constexpr void setSpeed(Speed<float> speed)
@@ -103,14 +102,11 @@ template <typename T> class Ball : public Collider<T>, public Renderable
     }
     void render(Stage& stage) override
     {
-        clear(stage);
-        stage.fill(m_placement, Color(0x00, 0x00, 0xff));
+        stage.fillRectangle(m_placement, Color(0x00, 0x00, 0xff));
     }
-    void clear(Stage& stage) override { stage.fill(m_prevPlacement, 0x0); }
 
   private:
     Rectangle<T> m_placement;
-    Rectangle<T> m_prevPlacement;
     Rectangle<T> m_origPlacement;
     Speed<float> m_speed;
     Speed<float> m_origSpeed;

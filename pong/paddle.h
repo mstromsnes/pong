@@ -5,17 +5,15 @@
 #include "stage.h"
 
 #include <memory>
-enum class PaddleDirection { Up = 0, Down = 1 };
+enum class PaddleDirection { Up = 0, Down = 1, Left = 2, Right = 3 };
 
 template <typename T> class Paddle : public Collider<T>, public Renderable
 {
   public:
-    constexpr Paddle()
-        : Collider<T>(),
-          Renderable(), placement{0, 0, 0, 0}, prev_placement{placement} {};
-    constexpr Paddle(Rectangle<T> pos)
-        : Collider<T>(), Renderable(), placement{pos}, prev_placement{pos} {};
-    void move(PaddleDirection dir, T speed, const Stage& stage)
+    constexpr Paddle() : placement{0, 0, 0, 0} {};
+    constexpr Paddle(Rectangle<T> pos) : placement{pos} {};
+
+    constexpr void move(PaddleDirection dir, T speed)
     {
         switch (dir)
         {
@@ -27,7 +25,13 @@ template <typename T> class Paddle : public Collider<T>, public Renderable
             placement.translate(Vector2D<float>(0, -speed));
             collision = false;
             break;
-        default:
+        case PaddleDirection::Left:
+            placement.translate(Vector2D<float>(-speed, 0));
+            collision = false;
+            break;
+        case PaddleDirection::Right:
+            placement.translate(Vector2D<float>(speed, 0));
+            collision = false;
             break;
         }
     }
@@ -47,19 +51,15 @@ template <typename T> class Paddle : public Collider<T>, public Renderable
     };
     void collide(CollisionType) noexcept override{};
 
-    void render(Stage& stage) override
+    constexpr void render(Stage& stage) override
     {
-        clear(stage);
-        prev_placement = placement;
-        stage.fill(placement, Color(0x00, 0x00, 0xff));
+        stage.fillRectangle(placement, Color(0x00, 0x00, 0xff));
     }
-    void clear(Stage& stage) override { stage.fill(prev_placement, 0x0); }
-    bool collided() { return collision; };
+    constexpr bool collided() { return collision; };
 
   private:
     bool collision = false;
     Rectangle<T> placement;
-    Rectangle<T> prev_placement;
 };
 
 #endif // PADDLE_H

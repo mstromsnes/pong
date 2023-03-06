@@ -12,14 +12,21 @@ template <typename T> class Line
                                              direction_vec * len},
           direction_vector{direction_vec}, len{len}
     {
-        clampDirectionVector();
     }
     constexpr Line(Position<T> start_position, Position<T> end_position)
         : start_pos{start_position}, end_pos{end_position},
           direction_vector{start_pos, end_pos}, len{direction_vector.length()}
     {
         direction_vector.normalize();
-        clampDirectionVector();
+    }
+    template <std::floating_point V>
+    constexpr Line(Vector2D<V> vec)
+        : start_pos{constants::Origin<T>}, end_pos{Position<T>{
+                                               std::lround(vec.x),
+                                               std::lround(vec.y)}},
+          direction_vector{vec}, len{direction_vector.length()}
+    {
+        direction_vector.normalize();
     }
     [[nodiscard]] Vector2D<double> normal() const
     {
@@ -47,6 +54,8 @@ template <typename T> class Line
     {
         return start_pos * (1 - t) + end_pos * t;
     }
+    [[nodiscard]] constexpr auto direction() const { return direction_vector; }
+    [[nodiscard]] constexpr auto length() const { return len; }
 
   private:
     constexpr void clampDirectionVector()

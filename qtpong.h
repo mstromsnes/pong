@@ -22,7 +22,8 @@ class QtPong : public QWidget
   private:
     void render();
     Pong m_pong;
-    QTimer m_loopTimer;
+    QTimer m_gameLoopTimer;
+    QTimer m_renderLoopTimer;
     MainWindow m_window;
 };
 

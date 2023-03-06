@@ -164,6 +164,16 @@ template <typename T> class Rectangle
                })
             .x;
     }
+    [[nodiscard]] constexpr auto verticesCCW() const
+    {
+        return std::array<Position<T>, 4>{topLeft(), bottomLeft(),
+                                          bottomRight(), topRight()};
+    }
+    [[nodiscard]] constexpr auto verticesCW() const
+    {
+        return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(),
+                                          bottomLeft()};
+    }
 
   private:
     [[nodiscard]] constexpr Position<T>

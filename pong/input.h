@@ -2,12 +2,21 @@
 #define INPUT_H
 
 enum class KeyPress {
-    P1Down = 0,
-    P1Up = 1,
-    P2Down = 2,
-    P2Up = 3,
-    Escape = 4,
-    Enter = 5,
+    P1Down,
+    P1Up,
+    P1Left,
+    P1Right,
+    P2Down,
+    P2Up,
+    P2Left,
+    P2Right,
+    Escape,
+    Enter,
+    i,
+    j,
+    k,
+    l,
+    DebugMode,
     Num_Keys
 };
 
