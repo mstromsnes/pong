@@ -92,8 +92,9 @@ void Pong::movePaddles(KeyPress press)
         break;
     }
 }
-void Pong::updatePixmap()
+constexpr void Pong::updatePixmap()
 {
+    m_stage.clear();
     for (Renderable& renderable : m_renderables)
     {
         renderable.render(m_stage);
