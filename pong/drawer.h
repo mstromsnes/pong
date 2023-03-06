@@ -5,7 +5,7 @@
 
 #include <vector>
 
-struct DrawParams
+struct TriangleDrawParams
 {
     float xstart;
     float xend;
@@ -67,14 +67,9 @@ class Drawer
     constexpr Drawer(GamePixmap& pixmap) : m_pixmap{pixmap} {}
     constexpr void drawHorizontalLine(int xs, int xe, int y, Color color)
     {
-        int offset = y * m_pixmap.getRowSize();
-        for (int i = xs; i < xe; i++)
+        for (int x = xs; x < xe; x++)
         {
-            for (int j = 0; j < m_pixmap.getChannelCount(); j++)
-            {
-                m_pixmap[offset + i * m_pixmap.getChannelCount() + j] =
-                    color[j];
-            }
+            paintPixel(x, y, color);
         }
     };
     constexpr void drawTriangle(Triangle<int> triangle, Color color)
@@ -90,8 +85,6 @@ class Drawer
                 int xend_r = std::lround(params.xend);
                 if (xstart_r >= 0 || xend_r < m_pixmap.getWidth())
                 {
-                    xstart_r = std::clamp(xstart_r, 0, m_pixmap.getWidth());
-                    xend_r = std::clamp(xend_r, 0, m_pixmap.getWidth());
                     drawHorizontalLine(xstart_r, xend_r, y, color);
                     params.xstart += params.dxleft;
                     params.xend += params.dxright;
@@ -99,9 +92,22 @@ class Drawer
             }
         }
     }
+    constexpr void paintPixel(int x, int y, Color color)
+    {
+        if (x < 0 || x >= m_pixmap.getWidth() || y < 0 ||
+            y >= m_pixmap.getHeight())
+            return;
+        for (int j = 0; j < m_pixmap.getChannelCount(); j++)
+        {
+            auto idx =
+                y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount() + j;
+            m_pixmap[idx] = color[j];
+        }
+    }
 
   private:
-    [[nodiscard]] constexpr DrawParams findInitialConditions(Triangle<int> tri)
+    [[nodiscard]] constexpr static TriangleDrawParams
+    findInitialConditions(const Triangle<int>& tri)
     {
         auto vertices{tri.getVertices()};
         float xstart = vertices[0].x;
@@ -115,7 +121,8 @@ class Drawer
             float xend = vertices[1].x;
             int yend = vertices[2].y;
 
-            return DrawParams(xstart, xend, ystart, yend, dxleft, dxright);
+            return TriangleDrawParams(xstart, xend, ystart, yend, dxleft,
+                                      dxright);
         }
         else
         {
@@ -125,7 +132,8 @@ class Drawer
                             static_cast<float>(vertices[2].y - vertices[0].y);
             float xend = vertices[0].x;
             int yend = vertices[1].y;
-            return DrawParams(xstart, xend, ystart, yend, dxleft, dxright);
+            return TriangleDrawParams(xstart, xend, ystart, yend, dxleft,
+                                      dxright);
         }
     };
     GamePixmap& m_pixmap;
