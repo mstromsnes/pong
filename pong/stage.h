@@ -7,14 +7,17 @@
 class Stage
 {
   public:
-    constexpr Stage() { fill(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00); };
+    constexpr Stage()
+    {
+        fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00);
+    };
 
     [[nodiscard]] constexpr auto bounds() const
     {
         return Size<int>(WIDTH, HEIGHT);
     };
     const GamePixmap& getPixmap() const { return m_pixmap; };
-    constexpr void fill(Rectangle<int> placement, Color color)
+    constexpr void fillRectangle(Rectangle<int> placement, Color color)
     {
         Drawer drawer{m_pixmap};
         for (const auto& triangle : placement.getDrawables())
@@ -22,6 +25,15 @@ class Stage
             drawer.drawTriangle(triangle, color);
         }
     };
+    template <typename T> constexpr void drawNormal(Line<T> line, Color color)
+    {
+        Drawer drawer{m_pixmap};
+        drawer.drawLineNormal(line, color);
+    }
+    constexpr void clear()
+    {
+        fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00);
+    }
 
   private:
     const int WIDTH = 320;

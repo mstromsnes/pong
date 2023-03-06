@@ -15,6 +15,11 @@ template <std::floating_point V> struct Vector2D
         : x{static_cast<V>(b.x - a.x)}, y{static_cast<V>(b.y - a.y)}
     {
     }
+    template <typename P>
+    constexpr Vector2D<V>(Position<P> pos)
+        : x{static_cast<V>(pos.x)}, y{static_cast<V>(pos.y)}
+    {
+    }
     constexpr Vector2D<V>(V x, V y) : x{x}, y{y} {}
     [[nodiscard]] Vector2D<V> operator-() const { return Vector2D<V>(-x, -y); };
     [[nodiscard]] constexpr V length() const { return std::hypot(x, y); }
@@ -31,6 +36,10 @@ template <std::floating_point V> struct Vector2D
     constexpr Vector2D<V> operator+(V right) const
     {
         return Vector2D<V>(x + right, y + right);
+    }
+    template <typename T> constexpr Vector2D<V> operator/(T divisor)
+    {
+        return Vector2D<V>{x / divisor, y / divisor};
     }
 };
 
@@ -84,6 +93,19 @@ template <typename P, std::floating_point V>
 {
     return Position<P>(pos.x + vec.x, pos.y + vec.y);
 };
+template <std::signed_integral P>
+[[nodiscard]] constexpr Vector2D<double> operator-(const Position<P>& pos1,
+                                                   const Position<P>& pos2)
+{
+    return Vector2D(static_cast<double>(pos2.x - pos1.x),
+                    static_cast<double>(pos2.y - pos1.y));
+}
+template <std::floating_point P>
+[[nodiscard]] constexpr Vector2D<P> operator-(const Position<P>& pos1,
+                                              const Position<P>& pos2)
+{
+    return Vector2D(pos2.x - pos1.x, pos2.y - pos1.y);
+}
 template <std::floating_point V>
 [[nodiscard]] constexpr V operator*(const Vector2D<V>& left,
                                     const Vector2D<V>& right)

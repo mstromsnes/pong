@@ -9,7 +9,6 @@ class Renderable
     constexpr Renderable(){};
     virtual ~Renderable() = default;
     virtual void render(Stage& stage) = 0;
-    virtual void clear(Stage& stage) = 0;
 };
 
 #endif // RENDERABLE_H
