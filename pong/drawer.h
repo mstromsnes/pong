@@ -3,6 +3,7 @@
 
 #include "geometry/triangle.h"
 
+#include <cmath>
 #include <vector>
 
 struct TriangleDrawParams
@@ -92,6 +93,44 @@ class Drawer
             }
         }
     }
+    template <typename T> constexpr void drawLine(Line<T> line, Color color)
+    {
+        // Bresenham line drawing algorithm that reverts to naive for axis
+        // aligned lines.
+        auto [x0, x1, y0, y1] = findEndPoints(line);
+        if (x1 < x0)
+        {
+            // We want to draw from left to right
+            std::swap(x1, x0);
+            std::swap(y1, y0);
+        }
+        if (y1 == y0)
+        {
+            drawHorizontalLine(x0, x1, y0, color);
+            return;
+        }
+        if (x0 == x1)
+        {
+            // Here we iterate y, so we want to draw from top to bottom
+            if (y1 < y0)
+                std::swap(y1, y0);
+            drawVerticalLine(x0, y0, y1, color);
+            return;
+        }
+        auto c = static_cast<float>(y1 - y0) / static_cast<float>(x1 - x0);
+        for (int x = x0; x < x1; x++)
+        {
+            auto y = std::lround(c * (x - x0) + y0);
+            paintPixel(x, y, color);
+        }
+    }
+    constexpr void drawVerticalLine(int x, int y0, int y1, Color color)
+    {
+        for (int y = y0; y < y1; y++)
+        {
+            paintPixel(x, y, color);
+        }
+    }
     constexpr void paintPixel(int x, int y, Color color)
     {
         if (x < 0 || x >= m_pixmap.getWidth() || y < 0 ||
@@ -103,6 +142,18 @@ class Drawer
                 y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount() + j;
             m_pixmap[idx] = color[j];
         }
+    }
+    template <typename T>
+    constexpr void drawLineNormal(Line<T> line, Color color)
+    // Draws a line normal to the line given, starting at the middle of the line
+    // given.
+    {
+        auto normalVec = line.normal();
+        auto length = std::min<double>(line.length(), 10.0f);
+        auto normalLine =
+            Line<T>(line.start() + line.direction() * line.length() / 2.0f,
+                    normalVec, length);
+        drawLine(normalLine, color);
     }
 
   private:
@@ -136,6 +187,28 @@ class Drawer
                                       dxright);
         }
     };
+    template <typename T>
+    constexpr static auto findEndPoints(Line<T> line)
+        -> std::tuple<int, int, int, int>
+    {
+        if constexpr (std::is_integral_v<T>)
+        {
+            auto x0 = line.start().x;
+            auto x1 = line.end().x;
+            auto y0 = line.start().y;
+            auto y1 = line.end().y;
+            return std::tuple{x0, x1, y0, y1};
+        }
+        else
+        {
+            auto x0 = std::lround(line.start().x);
+            auto x1 = std::lround(line.end().x);
+            auto y0 = std::lround(line.start().y);
+            auto y1 = std::lround(line.end().y);
+            return std::tuple{x0, x1, y0, y1};
+        }
+    }
+
     GamePixmap& m_pixmap;
 };
 
