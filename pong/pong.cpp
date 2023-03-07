@@ -31,19 +31,45 @@ void Pong::collision()
 {
     for (auto& ball : m_balls)
     {
-        if (Collider<int>::overlap(ball.getHitbox(),
-                                   m_paddles.left.getHitbox()) ||
-            Collider<int>::overlap(ball.getHitbox(),
-                                   m_paddles.right.getHitbox()))
         {
-            ball.collide(CollisionType::Vertical);
+            auto [overlap, minimumTranslationVector] =
+                Collider<int>::overlap<4, 4>(ball.getHitbox(),
+                                             m_paddles.left.getHitbox());
+            if (overlap)
+            {
+                ball.collide(minimumTranslationVector);
+                m_paddles.left.collide(minimumTranslationVector);
+            }
         }
-        else if (Collider<int>::overlap(ball.getHitbox(),
-                                        m_walls.top.getHitbox()) ||
-                 Collider<int>::overlap(ball.getHitbox(),
-                                        m_walls.bottom.getHitbox()))
         {
-            ball.collide(CollisionType::Horizontal);
+            auto [overlap, minimumTranslationVector] =
+                Collider<int>::overlap<4, 4>(ball.getHitbox(),
+                                             m_paddles.right.getHitbox());
+            if (overlap)
+            {
+                ball.collide(minimumTranslationVector);
+                m_paddles.right.collide(minimumTranslationVector);
+            }
+        }
+        {
+            auto [overlap, minimumTranslationVector] =
+                Collider<int>::overlap<4, 4>(ball.getHitbox(),
+                                             m_walls.top.getHitbox());
+            if (overlap)
+            {
+                ball.collide(minimumTranslationVector);
+                m_walls.top.collide(minimumTranslationVector);
+            }
+        }
+        {
+            auto [overlap, minimumTranslationVector] =
+                Collider<int>::overlap<4, 4>(ball.getHitbox(),
+                                             m_walls.bottom.getHitbox());
+            if (overlap)
+            {
+                ball.collide(minimumTranslationVector);
+                m_walls.bottom.collide(minimumTranslationVector);
+            }
         }
     }
 }
@@ -139,16 +165,16 @@ void Pong::moveBall(KeyPress press)
     switch (press)
     {
     case KeyPress::i:
-        m_balls[0].move_custom(-constants::YUnitVector<float>);
+        m_balls[0].move_custom(-constants::YUnitVector<double>);
         break;
     case KeyPress::j:
-        m_balls[0].move_custom(-constants::XUnitVector<float>);
+        m_balls[0].move_custom(-constants::XUnitVector<double>);
         break;
     case KeyPress::k:
-        m_balls[0].move_custom(constants::YUnitVector<float>);
+        m_balls[0].move_custom(constants::YUnitVector<double>);
         break;
     case KeyPress::l:
-        m_balls[0].move_custom(constants::XUnitVector<float>);
+        m_balls[0].move_custom(constants::XUnitVector<double>);
         break;
     default:
         break;

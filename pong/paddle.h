@@ -18,20 +18,16 @@ template <typename T> class Paddle : public Collider<T>, public Renderable
         switch (dir)
         {
         case PaddleDirection::Down:
-            placement.translate(Vector2D<float>(0, speed));
-            collision = false;
+            placement.translate(Vector2D<double>(0, speed));
             break;
         case PaddleDirection::Up:
-            placement.translate(Vector2D<float>(0, -speed));
-            collision = false;
+            placement.translate(Vector2D<double>(0, -speed));
             break;
         case PaddleDirection::Left:
-            placement.translate(Vector2D<float>(-speed, 0));
-            collision = false;
+            placement.translate(Vector2D<double>(-speed, 0));
             break;
         case PaddleDirection::Right:
-            placement.translate(Vector2D<float>(speed, 0));
-            collision = false;
+            placement.translate(Vector2D<double>(speed, 0));
             break;
         }
     }
@@ -49,11 +45,14 @@ template <typename T> class Paddle : public Collider<T>, public Renderable
     {
         return placement;
     };
-    void collide(CollisionType) noexcept override{};
+    void collide(Vector2D<double>) noexcept override { collision = true; };
 
     constexpr void render(Stage& stage) override
     {
-        stage.fillRectangle(placement, Color(0x00, 0x00, 0xff));
+        auto color =
+            collision ? Color(0xff, 0x00, 0x00) : Color(0x00, 0x00, 0xff);
+        stage.fillRectangle(placement, color);
+        collision = false;
     }
     constexpr bool collided() { return collision; };
 

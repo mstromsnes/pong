@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "line.h"
 #include "matrix.h"
+#include "polygon.h"
 #include "quadrilateral.h"
 #include "triangle.h"
 #include "vector.h"
@@ -16,7 +17,7 @@ template <typename T> struct Size
     T width;
     T height;
 };
-template <typename T> class Rectangle
+template <typename T> class Rectangle : public ConvexPolygon<T, 4>
 {
   public:
     constexpr Rectangle(T x, T y, T w, T h)
@@ -49,9 +50,9 @@ template <typename T> class Rectangle
               m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
     {
     }
-    [[nodiscard]] std::array<Line<T>, 4> lines() const
+    [[nodiscard]] virtual std::array<Line<T>, 4> lines() const override
     {
-        auto lines = std::array<Line, 4>{
+        auto lines = std::array<Line<T>, 4>{
             Line(topLeft(),
                  m_rotationAroundOriginMatrix * constants::XUnitVector<double>,
                  static_cast<double>(m_size.width)),
@@ -64,12 +65,20 @@ template <typename T> class Rectangle
             Line(bottomLeft(),
                  m_rotationAroundOriginMatrix * constants::YUnitVector<double>,
                  static_cast<double>(m_size.height))};
-        std::ranges::sort(lines, [](Line a, Line b) {
+        std::ranges::sort(lines, [](Line<T> a, Line<T> b) {
             return a.highestPoint() > b.highestPoint();
         });
         return lines;
     };
-    [[nodiscard]] constexpr Position<T> center() const
+    [[nodiscard]] virtual std::array<Vector2D<double>, 4>
+    normals() const override
+    {
+        auto v{verticesCCW()};
+        return std::array<Vector2D<double>, 4>{
+            Line<T>(v[0], v[3]).normal(), Line<T>(v[1], v[0]).normal(),
+            Line<T>(v[2], v[1]).normal(), Line<T>(v[3], v[2]).normal()};
+    }
+    [[nodiscard]] constexpr virtual Position<T> center() const override
     {
         return Position{(unrotatedLeft() + unrotatedRight()) / 2,
                         (unrotatedTop() + unrotatedBottom()) / 2};
@@ -101,7 +110,7 @@ template <typename T> class Rectangle
         auto rotatedPos = m_rotationAroundCenterMatrix * unrotatedPos;
     };
     [[nodiscard]] constexpr Size<T> size() const { return m_size; };
-    constexpr void translate(const Vector2D<float>& translation)
+    constexpr void translate(const Vector2D<double>& translation)
     {
         unrotatedPos += translation;
         m_translationToOriginMatrix =
@@ -109,7 +118,7 @@ template <typename T> class Rectangle
     }
     [[nodiscard]] constexpr std::vector<Triangle<T>> getDrawables() const
     {
-        Quadrilateral<T> rec{getCorners()};
+        Quadrilateral<T> rec{vertices()};
         return rec.getTriangles();
     }
     [[nodiscard]] constexpr T bottom() const
@@ -179,7 +188,7 @@ template <typename T> class Rectangle
     [[nodiscard]] constexpr Position<T>
     findExtremeHelper(std::function<bool(Position<T>)> predicate) const
     {
-        auto corners = getCorners();
+        auto corners = vertices();
         int corner = 0;
         for (int i = 0; i < corners.size(); i++)
         {
@@ -190,7 +199,8 @@ template <typename T> class Rectangle
         }
         return corners[corner];
     }
-    [[nodiscard]] constexpr std::array<Position<T>, 4> getCorners() const
+    [[nodiscard]] constexpr virtual std::array<Position<T>, 4>
+    vertices() const override
     {
         return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(),
                                           bottomLeft()};

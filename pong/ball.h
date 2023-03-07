@@ -32,7 +32,15 @@ template <std::floating_point S> struct Speed
             break;
         }
     }
-    void increase(S increment) { velocity = velocity + increment; }
+    void increase(S increment) { velocity = velocity * 1.02; }
+    template <std::floating_point N> void reflect(Vector2D<N> normal)
+    {
+        auto dotproduct = velocity * normal;
+        auto vec = dotproduct * normal;
+        auto scale = vec * 2.0f;
+        auto result = velocity - scale;
+        velocity = result;
+    }
     void reset() { velocity = origVelocity; }
 };
 template <typename P, std::floating_point S>
@@ -53,11 +61,11 @@ template <typename T> class Ball : public Collider<T>, public Renderable
         : m_placement{0, 0, 0, 0}, m_origPlacement{0, 0, 0, 0}, m_speed{0, 0},
           m_origSpeed{0, 0} {};
 
-    constexpr Ball(Rectangle<T> placement, Speed<float> speed)
+    constexpr Ball(Rectangle<T> placement, Speed<double> speed)
         : m_placement{placement}, m_origPlacement{placement}, m_speed{speed},
           m_origSpeed{speed} {};
     void move(Stage& stage) { m_placement.translate(m_speed.velocity); }
-    void move_custom(Vector2D<float> direction)
+    void move_custom(Vector2D<double> direction)
     {
         m_placement.translate(direction);
     }
@@ -75,11 +83,12 @@ template <typename T> class Ball : public Collider<T>, public Renderable
         return m_speed;
     };
 
-    void collide(CollisionType type) noexcept override
+    void collide(Vector2D<double> minimumTranslationVector) noexcept override
     {
-        m_speed.reverse(type);
-        if (type == CollisionType::Vertical)
-            m_speed.increase(0.2);
+        m_placement.translate(minimumTranslationVector);
+        m_speed.reflect(minimumTranslationVector.normalized());
+        m_speed.increase(0.2);
+        collision = true;
     };
     [[nodiscard]] const Rectangle<T>& getHitbox() const noexcept override
     {
@@ -95,21 +104,25 @@ template <typename T> class Ball : public Collider<T>, public Renderable
         m_placement = placement;
         m_origPlacement = placement;
     };
-    constexpr void setSpeed(Speed<float> speed)
+    constexpr void setSpeed(Speed<double> speed)
     {
         m_speed = speed;
         m_origSpeed = speed;
     }
     void render(Stage& stage) override
     {
-        stage.fillRectangle(m_placement, Color(0x00, 0x00, 0xff));
+        auto color =
+            collision ? Color(0xff, 0x00, 0x00) : Color(0x00, 0x00, 0xff);
+        stage.fillRectangle(m_placement, color);
+        collision = false;
     }
 
   private:
     Rectangle<T> m_placement;
     Rectangle<T> m_origPlacement;
-    Speed<float> m_speed;
-    Speed<float> m_origSpeed;
+    Speed<double> m_speed;
+    Speed<double> m_origSpeed;
+    bool collision = false;
 };
 
 #endif // BALL_H

@@ -101,7 +101,7 @@ class Pong
     }
     constexpr std::array<Ball<int>, 1> makeBalls()
     {
-        Speed<float> ballInitialSpeed{1.5f, 1};
+        Speed<double> ballInitialSpeed{1.5f, 1};
 
         return std::array{Ball<int>{ballRectangle(), ballInitialSpeed}};
     }

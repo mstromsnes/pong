@@ -19,6 +19,7 @@ void MainWindow::renderPong()
     m_centralWidget.setPixmap(
         QPixmap::fromImage(m_pixmapScene)
             .scaled(width(), height(), Qt::KeepAspectRatio));
+    update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
