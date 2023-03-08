@@ -77,7 +77,7 @@ class Pong
         auto rec = Rectangle<int>{
             RIGHT_SIDE - PADDLE_X_COORDINATE_MARGIN - PADDLE_WIDTH,
             CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH, PADDLE_HEIGHT};
-        rec.rotate(std::numbers::pi / 4);
+        // rec.rotate(std::numbers::pi / 4);
         return rec;
     }
     constexpr Rectangle<int> topWallRectangle() const
@@ -101,7 +101,7 @@ class Pong
     }
     constexpr std::array<Ball<int>, 1> makeBalls()
     {
-        Speed<float> ballInitialSpeed{1.5f, 1};
+        Speed<double> ballInitialSpeed{1.5f, 1};
 
         return std::array{Ball<int>{ballRectangle(), ballInitialSpeed}};
     }

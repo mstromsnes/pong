@@ -54,6 +54,25 @@ template <typename T> class Line
     {
         return start_pos * (1 - t) + end_pos * t;
     }
+    [[nodiscard]] constexpr std::pair<double, double>
+    findIntersection(Line<T> otherLine) const
+    {
+        auto x1d = end_pos.x - start_pos.x;                 // -b1
+        auto y1d = end_pos.y - start_pos.y;                 // a1
+        auto x2d = otherLine.end().x - otherLine.start().x; // -b2
+        auto y2d = otherLine.end().y - otherLine.start().y; // a2
+        auto xsd = start_pos.x - otherLine.start().x;
+        auto ysd = otherLine.start().y - start_pos.y;
+        auto divisor = x1d * y2d - y1d * x2d;
+        if (divisor == 0)
+            return std::make_pair(std::numeric_limits<double>::max(),
+                                  std::numeric_limits<double>::max());
+        double t1 = static_cast<double>(x2d * ysd - y2d * xsd) /
+                    static_cast<double>(divisor);
+        double t2 = static_cast<double>(x1d * ysd - y1d * xsd) /
+                    static_cast<double>(divisor);
+        return std::make_pair(t1, t2);
+    }
     [[nodiscard]] constexpr auto direction() const { return direction_vector; }
     [[nodiscard]] constexpr auto length() const { return len; }
 

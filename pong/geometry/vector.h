@@ -67,6 +67,8 @@ template <typename P> struct Position
         }
     };
 };
+template <typename T>
+concept arithmetic = std::integral<T> || std::floating_point<T>;
 
 template <typename M, std::floating_point V>
 [[nodiscard]] constexpr Vector2D<V> operator*(const Matrix3X3<M>& mat,
@@ -75,19 +77,38 @@ template <typename M, std::floating_point V>
     return Vector2D<V>(vec.x * mat.xx + vec.y * mat.xy + 1 * mat.xz,
                        vec.x * mat.yx + vec.y * mat.yy + 1 * mat.yz);
 }
-template <std::floating_point V, typename L>
+template <std::floating_point V, arithmetic S>
 [[nodiscard]] constexpr Vector2D<V> operator*(const Vector2D<V>& vec,
-                                              const L& length)
+                                              const S& scalar)
 {
-    return Vector2D<V>(vec.x * length, vec.y * length);
+    return Vector2D<V>(vec.x * scalar, vec.y * scalar);
 };
+template <std::floating_point V, arithmetic S>
+[[nodiscard]] constexpr Vector2D<V> operator*(const S& scalar,
+                                              const Vector2D<V>& vec)
+{
+    return Vector2D<V>(vec.x * scalar, vec.y * scalar);
+};
+template <std::floating_point V1, std::floating_point V2>
+[[nodiscard]] constexpr auto operator-(const Vector2D<V1>& left,
+                                       const Vector2D<V2>& right)
+    -> Vector2D<decltype(left.x - right.x)>
+{
+    return Vector2D(left.x - right.x, left.y - right.y);
+}
 template <typename P>
 [[nodiscard]] constexpr Position<P> operator+(const Position<P>& left,
                                               const Position<P>& right)
 {
     return Position<P>(left.x + right.x, left.y + right.y);
 }
-template <typename P, std::floating_point V>
+template <std::signed_integral P, std::floating_point V>
+[[nodiscard]] constexpr Position<P> operator+(const Position<P>& pos,
+                                              const Vector2D<V>& vec)
+{
+    return Position<P>(pos.x + std::lround(vec.x), pos.y + std::lround(vec.y));
+};
+template <std::floating_point P, std::floating_point V>
 [[nodiscard]] constexpr Position<P> operator+(const Position<P>& pos,
                                               const Vector2D<V>& vec)
 {
@@ -106,9 +127,10 @@ template <std::floating_point P>
 {
     return Vector2D(pos2.x - pos1.x, pos2.y - pos1.y);
 }
-template <std::floating_point V>
-[[nodiscard]] constexpr V operator*(const Vector2D<V>& left,
-                                    const Vector2D<V>& right)
+template <std::floating_point V1, std::floating_point V2>
+[[nodiscard]] constexpr auto operator*(const Vector2D<V1>& left,
+                                       const Vector2D<V2>& right)
+    -> decltype(left.x * right.x)
 {
     return left.x * right.x + left.y * right.y;
 };
@@ -127,4 +149,10 @@ template <typename M, std::signed_integral P>
         std::lround(left.xx * right.x + left.xy * right.y + left.xz * 1),
         std::lround(left.yx * right.x + left.yy * right.y + left.yz * 1));
 };
+template <std::floating_point V>
+[[nodiscard]] constexpr auto operator==(Vector2D<V> const& left,
+                                        Vector2D<V> const& right) -> bool
+{
+    return left.x == right.x && left.y == right.y;
+}
 #endif // VECTOR_H
