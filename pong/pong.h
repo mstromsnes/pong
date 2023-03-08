@@ -25,87 +25,17 @@ template <typename T> struct Walls
 class Pong
 {
   public:
-    constexpr Pong()
-        : m_paddles{Paddle<int>{leftPaddleRectangle()},
-                    Paddle<int>{rightPaddleRectangle()}},
-          m_walls{Paddle<int>{topWallRectangle()},
-                  Paddle<int>{
-                      bottomWallRectangle(),
-                  }},
-          m_balls{makeBalls()}
-    {
-        m_renderables.push_back(m_paddles.left);
-
-        m_renderables.push_back(m_paddles.right);
-
-        m_renderables.push_back(m_balls[0]);
-
-        m_renderables.push_back(m_walls.top);
-
-        m_renderables.push_back(m_walls.bottom);
-        updatePixmap();
-    };
-
+    constexpr Pong();
     Paddles<int> getPaddles() { return m_paddles; };
 
-    void keyPress(KeyPress);
-    void keyRelease(KeyPress);
+    constexpr void keyPress(KeyPress);
+    constexpr void keyRelease(KeyPress);
 
-    void eventLoop();
-    void renderLoop();
-    Stage& getStage() { return m_stage; };
+    constexpr void eventLoop();
+    constexpr void renderLoop();
+    constexpr Stage& getStage() { return m_stage; };
 
   private:
-    constexpr Rectangle<int> leftPaddleRectangle() const
-    {
-        const int LEFT_SIDE = 0;
-        const int BOTTOM_SIDE = m_stage.bounds().height;
-        const int CENTERED_PADDLE_Y_COORDINATE =
-            BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
-        constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
-        return Rectangle<int>{LEFT_SIDE + PADDLE_X_COORDINATE_MARGIN,
-                              CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH,
-                              PADDLE_HEIGHT};
-    }
-    constexpr Rectangle<int> rightPaddleRectangle() const
-    {
-        const int RIGHT_SIDE = m_stage.bounds().width;
-        const int BOTTOM_SIDE = m_stage.bounds().height;
-        const int CENTERED_PADDLE_Y_COORDINATE =
-            BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
-        constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
-        auto rec = Rectangle<int>{
-            RIGHT_SIDE - PADDLE_X_COORDINATE_MARGIN - PADDLE_WIDTH,
-            CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH, PADDLE_HEIGHT};
-        // rec.rotate(std::numbers::pi / 4);
-        return rec;
-    }
-    constexpr Rectangle<int> topWallRectangle() const
-    {
-        const int RIGHT_SIDE = m_stage.bounds().width;
-        return Rectangle{0, 0, RIGHT_SIDE, WALL_HEIGHT};
-    }
-    constexpr Rectangle<int> bottomWallRectangle() const
-    {
-        const int BOTTOM_SIDE = m_stage.bounds().height;
-        const int RIGHT_SIDE = m_stage.bounds().width;
-        return Rectangle{0, BOTTOM_SIDE - WALL_HEIGHT, RIGHT_SIDE, WALL_HEIGHT};
-    }
-    constexpr Rectangle<int> ballRectangle() const
-    {
-        const int RIGHT_SIDE = m_stage.bounds().width;
-        const int BOTTOM_SIDE = m_stage.bounds().height;
-        return Rectangle<int>{RIGHT_SIDE / 2 - BALL_SIDE_LENGTH / 2,
-                              BOTTOM_SIDE / 2 - BALL_SIDE_LENGTH / 2,
-                              BALL_SIDE_LENGTH, BALL_SIDE_LENGTH};
-    }
-    constexpr std::array<Ball<int>, 1> makeBalls()
-    {
-        Speed<double> ballInitialSpeed{1.5f, 1};
-
-        return std::array{Ball<int>{ballRectangle(), ballInitialSpeed}};
-    }
-    constexpr void drawHitboxNormals(Collider<int>&);
     Stage m_stage;
     Paddles<int> m_paddles;
     Walls<int> m_walls;
@@ -119,13 +49,22 @@ class Pong
     std::vector<std::reference_wrapper<Renderable>> m_renderables;
     bool m_debugMode = false;
 
-    void moveBalls();
-    void movePaddles(KeyPress);
-    void moveBall(KeyPress);
-    void collision();
-    void pollKeys();
+    constexpr Rectangle<int> leftPaddleRectangle() const;
+    constexpr Rectangle<int> rightPaddleRectangle() const;
+    constexpr Rectangle<int> topWallRectangle() const;
+    constexpr Rectangle<int> bottomWallRectangle() const;
+    constexpr Rectangle<int> ballRectangle() const;
+    constexpr std::array<Ball<int>, 1> makeBalls() const;
+
+    constexpr void drawHitboxNormals(Collider<int>&);
+    constexpr void moveBalls();
+    constexpr void movePaddles(KeyPress);
+    constexpr void moveBall(KeyPress);
+    constexpr void collision();
+    constexpr void pollKeys();
     constexpr void drawNormals();
     constexpr void updatePixmap();
 };
+#include "pong.ipp"
 
 #endif // PONG_H

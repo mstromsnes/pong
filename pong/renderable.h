@@ -1,5 +1,6 @@
 #ifndef RENDERABLE_H
 #define RENDERABLE_H
+#include "drawer.h"
 #include "stage.h"
 
 #include <memory>

@@ -1,10 +1,29 @@
-#include "pong.h"
-
 #include "geometry/constants.h"
 
 #include <algorithm>
 
-void Pong::eventLoop()
+constexpr Pong::Pong()
+    : m_paddles{Paddle<int>{leftPaddleRectangle()},
+                Paddle<int>{rightPaddleRectangle()}},
+      m_walls{Paddle<int>{topWallRectangle()},
+              Paddle<int>{
+                  bottomWallRectangle(),
+              }},
+      m_balls{makeBalls()}
+{
+    m_renderables.push_back(m_paddles.left);
+
+    m_renderables.push_back(m_paddles.right);
+
+    m_renderables.push_back(m_balls[0]);
+
+    m_renderables.push_back(m_walls.top);
+
+    m_renderables.push_back(m_walls.bottom);
+    updatePixmap();
+}
+
+constexpr void Pong::eventLoop()
 {
     pollKeys();
     if (!m_debugMode)
@@ -12,14 +31,14 @@ void Pong::eventLoop()
     collision();
 }
 
-void Pong::renderLoop()
+constexpr void Pong::renderLoop()
 {
     updatePixmap();
     if (m_debugMode)
         drawNormals();
 }
 
-void Pong::moveBalls()
+constexpr void Pong::moveBalls()
 {
     for (auto& ball : m_balls)
     {
@@ -27,7 +46,7 @@ void Pong::moveBalls()
     }
 }
 
-void Pong::collision()
+constexpr void Pong::collision()
 {
     for (auto& ball : m_balls)
     {
@@ -77,7 +96,7 @@ void Pong::collision()
         }
     }
 }
-void Pong::pollKeys()
+constexpr void Pong::pollKeys()
 {
     for (size_t i = 0; i < m_keysPressed.size(); i++)
     {
@@ -118,7 +137,7 @@ void Pong::pollKeys()
     }
 }
 
-void Pong::movePaddles(KeyPress press)
+constexpr void Pong::movePaddles(KeyPress press)
 {
     const int playable_area_top = 0 + m_walls.top.getHitbox().height();
     const int playable_area_bottom =
@@ -164,7 +183,7 @@ void Pong::movePaddles(KeyPress press)
         break;
     }
 }
-void Pong::moveBall(KeyPress press)
+constexpr void Pong::moveBall(KeyPress press)
 {
     switch (press)
     {
@@ -211,14 +230,64 @@ constexpr void Pong::drawNormals()
     drawHitboxNormals(m_walls.top);
     drawHitboxNormals(m_walls.bottom);
 }
-void Pong::keyPress(KeyPress press)
+constexpr void Pong::keyPress(KeyPress press)
 {
     m_keysPressed[static_cast<int>(press)] = true;
     if (press == KeyPress::DebugMode)
         m_debugMode = !m_debugMode;
 }
 
-void Pong::keyRelease(KeyPress press)
+constexpr void Pong::keyRelease(KeyPress press)
 {
     m_keysPressed[static_cast<int>(press)] = false;
+}
+
+constexpr Rectangle<int> Pong::leftPaddleRectangle() const
+{
+    const int LEFT_SIDE = 0;
+    const int BOTTOM_SIDE = m_stage.bounds().height;
+    const int CENTERED_PADDLE_Y_COORDINATE =
+        BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
+    constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
+    return Rectangle<int>{LEFT_SIDE + PADDLE_X_COORDINATE_MARGIN,
+                          CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH,
+                          PADDLE_HEIGHT};
+}
+constexpr Rectangle<int> Pong::rightPaddleRectangle() const
+{
+    const int RIGHT_SIDE = m_stage.bounds().width;
+    const int BOTTOM_SIDE = m_stage.bounds().height;
+    const int CENTERED_PADDLE_Y_COORDINATE =
+        BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
+    constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
+    auto rec = Rectangle<int>{
+        RIGHT_SIDE - PADDLE_X_COORDINATE_MARGIN - PADDLE_WIDTH,
+        CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH, PADDLE_HEIGHT};
+    // rec.rotate(std::numbers::pi / 4);
+    return rec;
+}
+constexpr Rectangle<int> Pong::topWallRectangle() const
+{
+    const int RIGHT_SIDE = m_stage.bounds().width;
+    return Rectangle{0, 0, RIGHT_SIDE, WALL_HEIGHT};
+}
+constexpr Rectangle<int> Pong::bottomWallRectangle() const
+{
+    const int BOTTOM_SIDE = m_stage.bounds().height;
+    const int RIGHT_SIDE = m_stage.bounds().width;
+    return Rectangle{0, BOTTOM_SIDE - WALL_HEIGHT, RIGHT_SIDE, WALL_HEIGHT};
+}
+constexpr Rectangle<int> Pong::ballRectangle() const
+{
+    const int RIGHT_SIDE = m_stage.bounds().width;
+    const int BOTTOM_SIDE = m_stage.bounds().height;
+    return Rectangle<int>{RIGHT_SIDE / 2 - BALL_SIDE_LENGTH / 2,
+                          BOTTOM_SIDE / 2 - BALL_SIDE_LENGTH / 2,
+                          BALL_SIDE_LENGTH, BALL_SIDE_LENGTH};
+}
+constexpr std::array<Ball<int>, 1> Pong::makeBalls() const
+{
+    Speed<double> ballInitialSpeed{1.5f, 1};
+
+    return std::array{Ball<int>{ballRectangle(), ballInitialSpeed}};
 }
