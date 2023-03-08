@@ -28,7 +28,16 @@ template <typename T> class Collider
         }
         for (auto normal : normals2)
         {
-            if (velocity * normal < 0)
+            bool alreadyAdded = false;
+            for (const auto& existingNormal : lineNormals)
+            {
+                if (normal == existingNormal)
+                {
+                    alreadyAdded = true;
+                    break;
+                }
+            }
+            if (!alreadyAdded && velocity * normal < 0)
                 lineNormals.push_back(normal);
         }
         auto vertices1 = polygon1.vertices();
@@ -39,7 +48,7 @@ template <typename T> class Collider
         {
             auto [overlap, mtv] =
                 shadowsOverlap<S1, S2>(normal, vertices1, vertices2);
-            if (!overlap)
+            if (!overlap || (mtv == 0.0f && minimumTranslation == 0.0f))
                 return std::make_pair(false, constants::NullVector<double>);
             if (mtv < minimumTranslation)
             {

@@ -189,7 +189,7 @@ constexpr void Pong::updatePixmap()
     m_stage.clear();
     for (Renderable& renderable : m_renderables)
     {
-        renderable.render(m_stage);
+        renderable.render(m_stage, m_debugMode);
     }
 }
 constexpr void Pong::drawHitboxNormals(Collider<int>& collider)

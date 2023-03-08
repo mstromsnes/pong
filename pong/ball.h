@@ -88,7 +88,7 @@ template <typename T> class Ball : public Collider<T>, public Renderable
         m_placement.translate(minimumTranslationVector);
         m_speed.reflect(minimumTranslationVector.normalized());
         m_speed.increase(0.2);
-        collision = true;
+        m_collision = true;
     };
     [[nodiscard]] const Rectangle<T>& getHitbox() const noexcept override
     {
@@ -109,12 +109,11 @@ template <typename T> class Ball : public Collider<T>, public Renderable
         m_speed = speed;
         m_origSpeed = speed;
     }
-    void render(Stage& stage) override
+    void render(Stage& stage, bool debug = false) override
     {
-        auto color =
-            collision ? Color(0xff, 0x00, 0x00) : Color(0x00, 0x00, 0xff);
+        auto color = m_collision && debug ? getDebugColor() : getColor();
         stage.fillRectangle(m_placement, color);
-        collision = false;
+        m_collision = false;
     }
 
   private:
@@ -122,7 +121,7 @@ template <typename T> class Ball : public Collider<T>, public Renderable
     Rectangle<T> m_origPlacement;
     Speed<double> m_speed;
     Speed<double> m_origSpeed;
-    bool collision = false;
+    bool m_collision = false;
 };
 
 #endif // BALL_H

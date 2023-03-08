@@ -149,4 +149,10 @@ template <typename M, std::signed_integral P>
         std::lround(left.xx * right.x + left.xy * right.y + left.xz * 1),
         std::lround(left.yx * right.x + left.yy * right.y + left.yz * 1));
 };
+template <std::floating_point V>
+[[nodiscard]] constexpr auto operator==(Vector2D<V> const& left,
+                                        Vector2D<V> const& right) -> bool
+{
+    return left.x == right.x && left.y == right.y;
+}
 #endif // VECTOR_H
