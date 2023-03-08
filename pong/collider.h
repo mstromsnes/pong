@@ -5,7 +5,8 @@
 
 enum class CollisionType { Horizontal, Vertical, Invalid };
 
-template <typename T> class Collider
+template <typename T>
+class Collider
 {
   public:
     constexpr Collider(){};
@@ -14,9 +15,7 @@ template <typename T> class Collider
     virtual void collide(Vector2D<double>) = 0;
     template <size_t S1, size_t S2>
     constexpr static std::pair<bool, Vector2D<double>>
-    overlap(const ConvexPolygon<T, S1>& polygon1,
-            const ConvexPolygon<T, S2>& polygon2,
-            const Vector2D<double> velocity)
+    overlap(const ConvexPolygon<T, S1>& polygon1, const ConvexPolygon<T, S2>& polygon2, const Vector2D<double> velocity)
     {
         auto normals1 = polygon1.normals();
         auto normals2 = polygon2.normals();
@@ -46,8 +45,7 @@ template <typename T> class Collider
         Vector2D<double> minimumTranslationAxis = constants::NullVector<double>;
         for (const auto& normal : lineNormals)
         {
-            auto [overlap, mtv] =
-                shadowsOverlap<S1, S2>(normal, vertices1, vertices2);
+            auto [overlap, mtv] = shadowsOverlap<S1, S2>(normal, vertices1, vertices2);
             if (!overlap || (mtv == 0.0f && minimumTranslation == 0.0f))
                 return std::make_pair(false, constants::NullVector<double>);
             if (mtv < minimumTranslation)
@@ -56,21 +54,16 @@ template <typename T> class Collider
                 minimumTranslation = mtv;
             }
         }
-        if (Vector2D<double>(polygon2.center() - polygon1.center()) *
-                minimumTranslationAxis <
-            0)
+        if (Vector2D<double>(polygon2.center() - polygon1.center()) * minimumTranslationAxis < 0)
             minimumTranslationAxis = -minimumTranslationAxis;
-        return std::make_pair(
-            true,
-            minimumTranslationAxis *
-                (minimumTranslation + std::numeric_limits<double>::epsilon()));
+        return std::make_pair(true,
+                              minimumTranslationAxis * (minimumTranslation + std::numeric_limits<double>::epsilon()));
     }
 
   private:
     template <size_t S1, size_t S2>
     constexpr static std::pair<bool, double>
-    shadowsOverlap(Vector2D<double> axis, std::array<Position<T>, S1> vertices1,
-                   std::array<Position<T>, S2> vertices2)
+    shadowsOverlap(Vector2D<double> axis, std::array<Position<T>, S1> vertices1, std::array<Position<T>, S2> vertices2)
     {
         auto p1min = Vector2D<double>(vertices1[0]) * axis;
         auto p1max = p1min;
@@ -89,8 +82,7 @@ template <typename T> class Collider
         bool overlap = (p2min <= p1max && p1min <= p2max);
         double right = p2max - p1min;
         double left = p1max - p2min;
-        double minimumTranslationVector =
-            right < left ? std::abs(right) : std::abs(-left);
+        double minimumTranslationVector = right < left ? std::abs(right) : std::abs(-left);
         return std::make_pair(overlap, minimumTranslationVector);
     }
 };

@@ -35,7 +35,7 @@ constexpr Triangle<T>::Triangle(Position<T> a, Position<T> b, Position<T> c) : m
     });
 }
 template <typename T>
-constexpr static Triangle<T>::std::pair<Triangle, Triangle> decomposeTriangle(Triangle<T> triangle)
+constexpr std::pair<Triangle<T>, Triangle<T>> Triangle<T>::decomposeTriangle(Triangle<T> triangle)
 {
     auto vertices = triangle.getVertices();
     Line line{vertices[0], vertices[2]};

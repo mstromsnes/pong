@@ -12,88 +12,71 @@
 #include <array>
 #include <functional>
 #include <numbers>
-template <typename T> struct Size
+template <typename T>
+struct Size
 {
     T width;
     T height;
 };
-template <typename T> class Rectangle : public ConvexPolygon<T, 4>
+template <typename T>
+class Rectangle : public ConvexPolygon<T, 4>
 {
   public:
     constexpr Rectangle(T x, T y, T w, T h)
         : unrotatedPos{x, y}, m_size{w, h}, orientation{0},
-          m_rotationAroundOriginMatrix{
-              calculateRotationAroundOriginMatrix(orientation)},
-          m_translationToOriginMatrix{
-              calculateTranslationToOriginMatrix(center())},
-          m_rotationAroundCenterMatrix{calculateRotationAroundCenterMatrix(
-              m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
+          m_rotationAroundOriginMatrix{calculateRotationAroundOriginMatrix(orientation)},
+          m_translationToOriginMatrix{calculateTranslationToOriginMatrix(center())},
+          m_rotationAroundCenterMatrix{
+              calculateRotationAroundCenterMatrix(m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
     {
     }
     constexpr Rectangle(Position<T> p, T w, T h)
         : unrotatedPos{p}, m_size{w, h}, orientation{0},
-          m_rotationAroundOriginMatrix{
-              calculateRotationAroundOriginMatrix(orientation)},
-          m_translationToOriginMatrix{
-              calculateTranslationToOriginMatrix(center())},
-          m_rotationAroundCenterMatrix{calculateRotationAroundCenterMatrix(
-              m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
+          m_rotationAroundOriginMatrix{calculateRotationAroundOriginMatrix(orientation)},
+          m_translationToOriginMatrix{calculateTranslationToOriginMatrix(center())},
+          m_rotationAroundCenterMatrix{
+              calculateRotationAroundCenterMatrix(m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
     {
     }
     constexpr Rectangle(T x, T y, Size<T> s)
         : unrotatedPos{x, y}, m_size{s}, orientation{0},
-          m_rotationAroundOriginMatrix{
-              calculateRotationAroundOriginMatrix(orientation)},
-          m_translationToOriginMatrix{
-              calculateTranslationToOriginMatrix(center())},
-          m_rotationAroundCenterMatrix{calculateRotationAroundCenterMatrix(
-              m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
+          m_rotationAroundOriginMatrix{calculateRotationAroundOriginMatrix(orientation)},
+          m_translationToOriginMatrix{calculateTranslationToOriginMatrix(center())},
+          m_rotationAroundCenterMatrix{
+              calculateRotationAroundCenterMatrix(m_rotationAroundOriginMatrix, m_translationToOriginMatrix)}
     {
     }
     [[nodiscard]] virtual std::array<Line<T>, 4> lines() const override
     {
-        auto lines = std::array<Line<T>, 4>{
-            Line(topLeft(),
-                 m_rotationAroundOriginMatrix * constants::XUnitVector<double>,
-                 static_cast<double>(m_size.width)),
-            Line(topRight(),
-                 m_rotationAroundOriginMatrix * constants::YUnitVector<double>,
-                 static_cast<double>(m_size.height)),
-            Line(bottomRight(),
-                 m_rotationAroundOriginMatrix * constants::XUnitVector<double>,
-                 static_cast<double>(m_size.width)),
-            Line(bottomLeft(),
-                 m_rotationAroundOriginMatrix * constants::YUnitVector<double>,
-                 static_cast<double>(m_size.height))};
-        std::ranges::sort(lines, [](Line<T> a, Line<T> b) {
-            return a.highestPoint() > b.highestPoint();
-        });
+        auto lines =
+            std::array<Line<T>, 4>{Line(topLeft(), m_rotationAroundOriginMatrix * constants::XUnitVector<double>,
+                                        static_cast<double>(m_size.width)),
+                                   Line(topRight(), m_rotationAroundOriginMatrix * constants::YUnitVector<double>,
+                                        static_cast<double>(m_size.height)),
+                                   Line(bottomRight(), m_rotationAroundOriginMatrix * constants::XUnitVector<double>,
+                                        static_cast<double>(m_size.width)),
+                                   Line(bottomLeft(), m_rotationAroundOriginMatrix * constants::YUnitVector<double>,
+                                        static_cast<double>(m_size.height))};
+        std::ranges::sort(lines, [](Line<T> a, Line<T> b) { return a.highestPoint() > b.highestPoint(); });
         return lines;
     };
-    [[nodiscard]] virtual std::array<Vector2D<double>, 4>
-    normals() const override
+    [[nodiscard]] virtual std::array<Vector2D<double>, 4> normals() const override
     {
         auto v{verticesCCW()};
-        return std::array<Vector2D<double>, 4>{
-            Line<T>(v[0], v[3]).normal(), Line<T>(v[1], v[0]).normal(),
-            Line<T>(v[2], v[1]).normal(), Line<T>(v[3], v[2]).normal()};
+        return std::array<Vector2D<double>, 4>{Line<T>(v[0], v[3]).normal(), Line<T>(v[1], v[0]).normal(),
+                                               Line<T>(v[2], v[1]).normal(), Line<T>(v[3], v[2]).normal()};
     }
     [[nodiscard]] constexpr virtual Position<T> center() const override
     {
-        return Position{(unrotatedLeft() + unrotatedRight()) / 2,
-                        (unrotatedTop() + unrotatedBottom()) / 2};
+        return Position{(unrotatedLeft() + unrotatedRight()) / 2, (unrotatedTop() + unrotatedBottom()) / 2};
     };
     [[nodiscard]] constexpr bool contains(Position<T> pos)
     {
-        Position<T> rotated =
-            m_rotationAroundOriginMatrix.reverseRotation() * pos;
-        return !(rotated.y < unrotatedTop() || rotated.y > unrotatedBottom() ||
-                 rotated.x < unrotatedLeft() || rotated.x > unrotatedRight());
+        Position<T> rotated = m_rotationAroundOriginMatrix.reverseRotation() * pos;
+        return !(rotated.y < unrotatedTop() || rotated.y > unrotatedBottom() || rotated.x < unrotatedLeft() ||
+                 rotated.x > unrotatedRight());
     };
-    [[nodiscard]] constexpr Position<T> pos() const
-    {
-        return m_rotationAroundCenterMatrix * unrotatedPos;
-    };
+    [[nodiscard]] constexpr Position<T> pos() const { return m_rotationAroundCenterMatrix * unrotatedPos; };
     [[nodiscard]] constexpr T width() const { return m_size.width; };
     [[nodiscard]] constexpr T height() const { return m_size.height; };
     constexpr void rotate(double angleRadians)
@@ -103,18 +86,16 @@ template <typename T> class Rectangle : public ConvexPolygon<T, 4>
             orientation -= std::numbers::pi;
         while (orientation <= -std::numbers::pi / 2)
             orientation += std::numbers::pi;
-        m_rotationAroundOriginMatrix =
-            calculateRotationAroundOriginMatrix(orientation);
-        m_rotationAroundCenterMatrix = calculateRotationAroundCenterMatrix(
-            m_rotationAroundOriginMatrix, m_translationToOriginMatrix);
+        m_rotationAroundOriginMatrix = calculateRotationAroundOriginMatrix(orientation);
+        m_rotationAroundCenterMatrix =
+            calculateRotationAroundCenterMatrix(m_rotationAroundOriginMatrix, m_translationToOriginMatrix);
         auto rotatedPos = m_rotationAroundCenterMatrix * unrotatedPos;
     };
     [[nodiscard]] constexpr Size<T> size() const { return m_size; };
     constexpr void translate(const Vector2D<double>& translation)
     {
         unrotatedPos += translation;
-        m_translationToOriginMatrix =
-            calculateTranslationToOriginMatrix(center());
+        m_translationToOriginMatrix = calculateTranslationToOriginMatrix(center());
     }
     [[nodiscard]] constexpr std::vector<Triangle<T>> getDrawables() const
     {
@@ -175,18 +156,15 @@ template <typename T> class Rectangle : public ConvexPolygon<T, 4>
     }
     [[nodiscard]] constexpr auto verticesCCW() const
     {
-        return std::array<Position<T>, 4>{topLeft(), bottomLeft(),
-                                          bottomRight(), topRight()};
+        return std::array<Position<T>, 4>{topLeft(), bottomLeft(), bottomRight(), topRight()};
     }
     [[nodiscard]] constexpr auto verticesCW() const
     {
-        return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(),
-                                          bottomLeft()};
+        return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(), bottomLeft()};
     }
 
   private:
-    [[nodiscard]] constexpr Position<T>
-    findExtremeHelper(std::function<bool(Position<T>)> predicate) const
+    [[nodiscard]] constexpr Position<T> findExtremeHelper(std::function<bool(Position<T>)> predicate) const
     {
         auto corners = vertices();
         int corner = 0;
@@ -199,17 +177,12 @@ template <typename T> class Rectangle : public ConvexPolygon<T, 4>
         }
         return corners[corner];
     }
-    [[nodiscard]] constexpr virtual std::array<Position<T>, 4>
-    vertices() const override
+    [[nodiscard]] constexpr virtual std::array<Position<T>, 4> vertices() const override
     {
-        return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(),
-                                          bottomLeft()};
+        return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(), bottomLeft()};
     }
     [[nodiscard]] constexpr Position<T> topLeft() const { return pos(); };
-    [[nodiscard]] constexpr Position<T> topRight() const
-    {
-        return m_rotationAroundCenterMatrix * unrotatedTopRight();
-    };
+    [[nodiscard]] constexpr Position<T> topRight() const { return m_rotationAroundCenterMatrix * unrotatedTopRight(); };
     [[nodiscard]] constexpr Position<T> bottomLeft() const
     {
         return m_rotationAroundCenterMatrix * unrotatedBottomLeft();
@@ -219,19 +192,10 @@ template <typename T> class Rectangle : public ConvexPolygon<T, 4>
         return m_rotationAroundCenterMatrix * unrotatedBottomRight();
     };
     [[nodiscard]] constexpr T unrotatedLeft() const { return unrotatedPos.x; };
-    [[nodiscard]] constexpr T unrotatedRight() const
-    {
-        return unrotatedPos.x + m_size.width;
-    };
+    [[nodiscard]] constexpr T unrotatedRight() const { return unrotatedPos.x + m_size.width; };
     [[nodiscard]] constexpr T unrotatedTop() const { return unrotatedPos.y; };
-    [[nodiscard]] constexpr T unrotatedBottom() const
-    {
-        return unrotatedPos.y + m_size.height;
-    };
-    [[nodiscard]] constexpr Position<T> unrotatedTopLeft() const
-    {
-        return unrotatedPos;
-    };
+    [[nodiscard]] constexpr T unrotatedBottom() const { return unrotatedPos.y + m_size.height; };
+    [[nodiscard]] constexpr Position<T> unrotatedTopLeft() const { return unrotatedPos; };
     [[nodiscard]] constexpr Position<T> unrotatedTopRight() const
     {
         return unrotatedPos + Position<T>(m_size.width, 0);
@@ -244,23 +208,19 @@ template <typename T> class Rectangle : public ConvexPolygon<T, 4>
     {
         return unrotatedPos + Position<T>(m_size.width, m_size.height);
     };
-    [[nodiscard]] constexpr static Matrix3X3<double>
-    calculateRotationAroundOriginMatrix(double orientation)
+    [[nodiscard]] constexpr static Matrix3X3<double> calculateRotationAroundOriginMatrix(double orientation)
     {
         return Matrix3X3<double>::fromRotation(orientation);
     };
-    [[nodiscard]] constexpr static Matrix3X3<double>
-    calculateTranslationToOriginMatrix(Position<T>&& center)
+    [[nodiscard]] constexpr static Matrix3X3<double> calculateTranslationToOriginMatrix(Position<T>&& center)
     {
         return Matrix3X3<double>::fromTranslation(-center);
     };
     [[nodiscard]] constexpr static Matrix3X3<double>
-    calculateRotationAroundCenterMatrix(
-        Matrix3X3<double> rotationAroundOriginMatrix,
-        Matrix3X3<double> translationToOriginMatrix)
+    calculateRotationAroundCenterMatrix(Matrix3X3<double> rotationAroundOriginMatrix,
+                                        Matrix3X3<double> translationToOriginMatrix)
     {
-        Matrix3X3 intermediateMatrix =
-            rotationAroundOriginMatrix * translationToOriginMatrix;
+        Matrix3X3 intermediateMatrix = rotationAroundOriginMatrix * translationToOriginMatrix;
         Matrix3X3 secondMatrix = translationToOriginMatrix.reverseTranslation();
         Matrix3X3 finalMatrix = secondMatrix * intermediateMatrix;
         return translationToOriginMatrix.reverseTranslation() *

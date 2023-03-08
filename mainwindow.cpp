@@ -2,23 +2,19 @@
 
 #include "qtpong.h"
 
-MainWindow::MainWindow(const Stage& stage, QtPong* pong)
-    : QMainWindow(nullptr), p_pong{pong}
+MainWindow::MainWindow(const Stage& stage, QtPong* pong) : QMainWindow(nullptr), p_pong{pong}
 {
     const auto& pixmap = stage.getPixmap();
     auto scene = stage.bounds();
     const auto data = pixmap.data();
-    m_pixmapScene =
-        QImage(data, scene.width, scene.height, QImage::Format_RGBA8888);
+    m_pixmapScene = QImage(data, scene.width, scene.height, QImage::Format_RGBA8888);
     m_centralWidget.setMinimumSize(scene.width, scene.height);
     setCentralWidget(&m_centralWidget);
 }
 
 void MainWindow::renderPong()
 {
-    m_centralWidget.setPixmap(
-        QPixmap::fromImage(m_pixmapScene)
-            .scaled(width(), height(), Qt::KeepAspectRatio));
+    m_centralWidget.setPixmap(QPixmap::fromImage(m_pixmapScene).scaled(width(), height(), Qt::KeepAspectRatio));
     update();
 }
 

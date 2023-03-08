@@ -17,10 +17,8 @@ struct TriangleDrawParams
 };
 struct Color
 {
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-        : r{r}, g{g}, b{b}, a{a} {};
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b)
-        : r{r}, g{g}, b{b}, a{0xff} {};
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : r{r}, g{g}, b{b}, a{a} {};
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b) : r{r}, g{g}, b{b}, a{0xff} {};
     uint8_t r, g, b, a;
 
     constexpr Color(uint8_t grey) : r{grey}, g{grey}, b{grey}, a{0xff} {};
@@ -50,8 +48,7 @@ class GamePixmap
 {
   public:
     constexpr GamePixmap(int width, int height, int channels)
-        : num_channels{channels}, m_pixmap(width * height * num_channels, 0x00),
-          m_width{width}, m_height{height} {};
+        : num_channels{channels}, m_pixmap(width * height * num_channels, 0x00), m_width{width}, m_height{height} {};
     constexpr int getChannelCount() const { return num_channels; };
     constexpr int getWidth() const { return m_width; };
     constexpr int getHeight() const { return m_height; };
@@ -71,18 +68,17 @@ class Drawer
     constexpr Drawer(GamePixmap& pixmap) : m_pixmap{pixmap} {}
     constexpr void drawHorizontalLine(int xs, int xe, int y, Color color);
     constexpr void drawTriangle(Triangle<int> triangle, Color color);
-    template <typename T> constexpr void drawLine(Line<T> line, Color color);
+    template <typename T>
+    constexpr void drawLine(Line<T> line, Color color);
     constexpr void drawVerticalLine(int x, int y0, int y1, Color color);
     constexpr void paintPixel(int x, int y, Color color);
     template <typename T>
     constexpr void drawLineNormal(Line<T> line, Color color);
 
   private:
-    [[nodiscard]] constexpr static TriangleDrawParams
-    findInitialConditions(const Triangle<int>& tri);
+    [[nodiscard]] constexpr static TriangleDrawParams findInitialConditions(const Triangle<int>& tri);
     template <typename T>
-    constexpr static auto findEndPoints(Line<T> line)
-        -> std::tuple<int, int, int, int>;
+    constexpr static auto findEndPoints(Line<T> line) -> std::tuple<int, int, int, int>;
 
     GamePixmap& m_pixmap;
 };

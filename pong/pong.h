@@ -11,12 +11,14 @@
 #include <numbers>
 #include <vector>
 
-template <typename T> struct Paddles
+template <typename T>
+struct Paddles
 {
     Paddle<T> left;
     Paddle<T> right;
 };
-template <typename T> struct Walls
+template <typename T>
+struct Walls
 {
     Paddle<T> top;
     Paddle<T> bottom;
@@ -43,8 +45,7 @@ class Pong
     static constexpr const int PADDLE_WIDTH = 6;
     static constexpr const int BALL_SIDE_LENGTH = 6;
     static constexpr const int WALL_HEIGHT = 5;
-    std::array<bool, static_cast<size_t>(KeyPress::Num_Keys)> m_keysPressed{
-        false};
+    std::array<bool, static_cast<size_t>(KeyPress::Num_Keys)> m_keysPressed{false};
     std::array<Ball<int>, 1> m_balls;
     std::vector<std::reference_wrapper<Renderable>> m_renderables;
     bool m_debugMode = false;

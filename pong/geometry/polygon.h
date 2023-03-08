@@ -1,6 +1,7 @@
 #ifndef POLYGON_H
 #define POLYGON_H
-template <typename T, size_t S> class ConvexPolygon
+template <typename T, size_t S>
+class ConvexPolygon
 {
   public:
     virtual [[nodiscard]] std::array<Line<T>, S> lines() const = 0;

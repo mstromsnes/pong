@@ -17,7 +17,10 @@ QtPong::QtPong() : m_window{m_pong.getStage(), this}, m_gameLoopTimer{this}
     m_renderLoopTimer.start();
 }
 
-void QtPong::render() { m_window.renderPong(); }
+void QtPong::render()
+{
+    m_window.renderPong();
+}
 
 void QtPong::keyPressEvent(QKeyEvent* event)
 {

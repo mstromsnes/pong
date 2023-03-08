@@ -7,15 +7,9 @@
 class Stage
 {
   public:
-    constexpr Stage()
-    {
-        fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00);
-    };
+    constexpr Stage() { fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00); };
 
-    [[nodiscard]] constexpr auto bounds() const -> Size<int>
-    {
-        return Size(WIDTH, HEIGHT);
-    };
+    [[nodiscard]] constexpr auto bounds() const -> Size<int> { return Size(WIDTH, HEIGHT); };
     auto const& getPixmap() const { return m_pixmap; };
     constexpr void fillRectangle(Rectangle<int> placement, Color color)
     {
@@ -25,15 +19,13 @@ class Stage
             drawer.drawTriangle(triangle, color);
         }
     };
-    template <typename T> constexpr void drawNormal(Line<T> line, Color color)
+    template <typename T>
+    constexpr void drawNormal(Line<T> line, Color color)
     {
         Drawer drawer{m_pixmap};
         drawer.drawLineNormal(line, color);
     }
-    constexpr void clear()
-    {
-        fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00);
-    }
+    constexpr void clear() { fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00); }
 
   private:
     const int WIDTH = 320;
