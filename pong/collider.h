@@ -15,18 +15,21 @@ template <typename T> class Collider
     template <size_t S1, size_t S2>
     constexpr static std::pair<bool, Vector2D<double>>
     overlap(const ConvexPolygon<T, S1>& polygon1,
-            const ConvexPolygon<T, S2>& polygon2)
+            const ConvexPolygon<T, S2>& polygon2,
+            const Vector2D<double> velocity)
     {
         auto normals1 = polygon1.normals();
         auto normals2 = polygon2.normals();
         std::vector<Vector2D<double>> lineNormals{};
         for (auto normal : normals1)
         {
-            lineNormals.push_back(normal);
+            if (velocity * normal < 0)
+                lineNormals.push_back(normal);
         }
         for (auto normal : normals2)
         {
-            lineNormals.push_back(normal);
+            if (velocity * normal < 0)
+                lineNormals.push_back(normal);
         }
         auto vertices1 = polygon1.vertices();
         auto vertices2 = polygon2.vertices();

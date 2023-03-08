@@ -78,7 +78,7 @@ template <typename T> class Ball : public Collider<T>, public Renderable
         return m_placement.size();
     };
 
-    [[nodiscard]] const Speed<float>& getSpeed() const noexcept
+    [[nodiscard]] const Speed<double>& getSpeed() const noexcept
     {
         return m_speed;
     };

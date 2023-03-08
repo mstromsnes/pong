@@ -34,7 +34,8 @@ void Pong::collision()
         {
             auto [overlap, minimumTranslationVector] =
                 Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_paddles.left.getHitbox());
+                                             m_paddles.left.getHitbox(),
+                                             ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -44,7 +45,8 @@ void Pong::collision()
         {
             auto [overlap, minimumTranslationVector] =
                 Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_paddles.right.getHitbox());
+                                             m_paddles.right.getHitbox(),
+                                             ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -54,7 +56,8 @@ void Pong::collision()
         {
             auto [overlap, minimumTranslationVector] =
                 Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_walls.top.getHitbox());
+                                             m_walls.top.getHitbox(),
+                                             ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -64,7 +67,8 @@ void Pong::collision()
         {
             auto [overlap, minimumTranslationVector] =
                 Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_walls.bottom.getHitbox());
+                                             m_walls.bottom.getHitbox(),
+                                             ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
