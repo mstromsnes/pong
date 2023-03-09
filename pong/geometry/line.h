@@ -26,21 +26,21 @@ class Line
         direction_vector.normalize();
     }
     [[nodiscard]] Vector2D<double> normal() const { return constants::PiHalfRotationMatrix<double> * direction_vector; }
-    [[nodiscard]] constexpr Position<T> start() const { return start_pos; };
-    [[nodiscard]] constexpr Position<T> end() const { return end_pos; };
-    [[nodiscard]] constexpr T highestPoint() const { return std::min(start_pos.y, end_pos.y); };
-    [[nodiscard]] constexpr T yFromX(T x)
+    [[nodiscard]] constexpr auto start() const { return start_pos; };
+    [[nodiscard]] constexpr auto end() const { return end_pos; };
+    [[nodiscard]] constexpr auto highestPoint() const { return std::min(start_pos.y, end_pos.y); };
+    [[nodiscard]] constexpr auto yFromX(T x) -> T
     {
         double t = static_cast<double>(x - start_pos.x) / static_cast<double>(end_pos.x - start_pos.x);
         return start_pos.y * (1 - t) + end_pos.y * t;
     }
-    [[nodiscard]] constexpr T xFromY(T y)
+    [[nodiscard]] constexpr auto xFromY(T y) -> T
     {
         double t = static_cast<double>(y - start_pos.y) / static_cast<double>(end_pos.y - start_pos.y);
         return start_pos.x * (1 - t) + end_pos.x * t;
     }
-    [[nodiscard]] constexpr Position<T> getPos(double t) { return start_pos * (1 - t) + end_pos * t; }
-    [[nodiscard]] constexpr std::pair<double, double> findIntersection(Line<T> otherLine) const
+    [[nodiscard]] constexpr auto getPos(double t) -> Position<T> { return start_pos * (1 - t) + end_pos * t; }
+    [[nodiscard]] constexpr auto findIntersection(Line<T> otherLine) const -> std::pair<double, double>
     {
         auto x1d = end_pos.x - start_pos.x;                 // -b1
         auto y1d = end_pos.y - start_pos.y;                 // a1

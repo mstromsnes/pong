@@ -16,11 +16,13 @@ class QtPong : public QWidget
     Q_OBJECT
   public:
     QtPong();
+
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
 
   private:
     void render();
+
     Pong m_pong;
     QTimer m_gameLoopTimer;
     QTimer m_renderLoopTimer;

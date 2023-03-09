@@ -10,8 +10,8 @@ class Triangle
 {
   public:
     constexpr Triangle(Position<T> a, Position<T> b, Position<T> c);
-    constexpr std::array<Position<T>, 3> getVertices() const { return m_vertices; }
-    constexpr static std::pair<Triangle, Triangle> decomposeTriangle(Triangle triangle);
+    constexpr auto getVertices() const { return m_vertices; }
+    constexpr static auto decomposeTriangle(Triangle triangle) -> std::pair<Triangle, Triangle>;
 
     // A triangle is decomposable if it doesn't have a flat, horizontal top or
     // bottom line. It can then be decomposed into two triangles that each have
@@ -35,7 +35,7 @@ constexpr Triangle<T>::Triangle(Position<T> a, Position<T> b, Position<T> c) : m
     });
 }
 template <typename T>
-constexpr std::pair<Triangle<T>, Triangle<T>> Triangle<T>::decomposeTriangle(Triangle<T> triangle)
+constexpr auto Triangle<T>::decomposeTriangle(Triangle<T> triangle) -> std::pair<Triangle, Triangle>
 {
     auto vertices = triangle.getVertices();
     Line line{vertices[0], vertices[2]};
@@ -44,7 +44,7 @@ constexpr std::pair<Triangle<T>, Triangle<T>> Triangle<T>::decomposeTriangle(Tri
 }
 
 template <typename T>
-constexpr bool Triangle<T>::isDecomposable() const
+constexpr auto Triangle<T>::isDecomposable() const -> bool
 {
     return !(m_vertices[0].y == m_vertices[1].y || m_vertices[1].y == m_vertices[2].y);
 }

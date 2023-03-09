@@ -3,8 +3,7 @@
 #include <algorithm>
 
 constexpr Pong::Pong()
-    : m_paddles{Paddle<int>{leftPaddleRectangle()},
-                Paddle<int>{rightPaddleRectangle()}},
+    : m_paddles{Paddle<int>{leftPaddleRectangle()}, Paddle<int>{rightPaddleRectangle()}},
       m_walls{Paddle<int>{topWallRectangle()},
               Paddle<int>{
                   bottomWallRectangle(),
@@ -52,9 +51,7 @@ constexpr void Pong::collision()
     {
         {
             auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_paddles.left.getHitbox(),
-                                             ball.getSpeed().velocity);
+                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_paddles.left.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -63,9 +60,7 @@ constexpr void Pong::collision()
         }
         {
             auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_paddles.right.getHitbox(),
-                                             ball.getSpeed().velocity);
+                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_paddles.right.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -74,9 +69,7 @@ constexpr void Pong::collision()
         }
         {
             auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_walls.top.getHitbox(),
-                                             ball.getSpeed().velocity);
+                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_walls.top.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -85,9 +78,7 @@ constexpr void Pong::collision()
         }
         {
             auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(),
-                                             m_walls.bottom.getHitbox(),
-                                             ball.getSpeed().velocity);
+                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_walls.bottom.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -96,6 +87,7 @@ constexpr void Pong::collision()
         }
     }
 }
+
 constexpr void Pong::pollKeys()
 {
     for (size_t i = 0; i < m_keysPressed.size(); i++)
@@ -140,8 +132,7 @@ constexpr void Pong::pollKeys()
 constexpr void Pong::movePaddles(KeyPress press)
 {
     const int playable_area_top = 0 + m_walls.top.getHitbox().height();
-    const int playable_area_bottom =
-        m_stage.bounds().height - m_walls.bottom.getHitbox().height();
+    const int playable_area_bottom = m_stage.bounds().height - m_walls.bottom.getHitbox().height();
     const int playable_area_left = 0;
     const int playable_area_right = m_stage.bounds().width;
     const int speed = 3;
@@ -183,6 +174,7 @@ constexpr void Pong::movePaddles(KeyPress press)
         break;
     }
 }
+
 constexpr void Pong::moveBall(KeyPress press)
 {
     switch (press)
@@ -203,6 +195,7 @@ constexpr void Pong::moveBall(KeyPress press)
         break;
     }
 }
+
 constexpr void Pong::updatePixmap()
 {
     m_stage.clear();
@@ -211,17 +204,18 @@ constexpr void Pong::updatePixmap()
         renderable.render(m_stage, m_debugMode);
     }
 }
+
 constexpr void Pong::drawHitboxNormals(Collider<int>& collider)
 {
     auto vert = collider.getHitbox().verticesCW();
-    auto lines = std::array<Line<int>, 4>{
-        Line<int>(vert[0], vert[3]), Line<int>(vert[1], vert[0]),
-        Line<int>(vert[2], vert[1]), Line<int>(vert[3], vert[2])};
+    auto lines = std::array<Line<int>, 4>{Line<int>(vert[0], vert[3]), Line<int>(vert[1], vert[0]),
+                                          Line<int>(vert[2], vert[1]), Line<int>(vert[3], vert[2])};
     for (auto line : lines)
     {
         m_stage.drawNormal(line, Color{0x00, 0xff, 0xff});
     }
 }
+
 constexpr void Pong::drawNormals()
 {
     drawHitboxNormals(m_balls[0]);
@@ -230,6 +224,7 @@ constexpr void Pong::drawNormals()
     drawHitboxNormals(m_walls.top);
     drawHitboxNormals(m_walls.bottom);
 }
+
 constexpr void Pong::keyPress(KeyPress press)
 {
     m_keysPressed[static_cast<int>(press)] = true;
@@ -242,50 +237,50 @@ constexpr void Pong::keyRelease(KeyPress press)
     m_keysPressed[static_cast<int>(press)] = false;
 }
 
-constexpr Rectangle<int> Pong::leftPaddleRectangle() const
+constexpr auto Pong::leftPaddleRectangle() const -> Rectangle<int>
 {
     const int LEFT_SIDE = 0;
     const int BOTTOM_SIDE = m_stage.bounds().height;
-    const int CENTERED_PADDLE_Y_COORDINATE =
-        BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
+    const int CENTERED_PADDLE_Y_COORDINATE = BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
     constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
-    return Rectangle<int>{LEFT_SIDE + PADDLE_X_COORDINATE_MARGIN,
-                          CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH,
+    return Rectangle<int>{LEFT_SIDE + PADDLE_X_COORDINATE_MARGIN, CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH,
                           PADDLE_HEIGHT};
 }
-constexpr Rectangle<int> Pong::rightPaddleRectangle() const
+
+constexpr auto Pong::rightPaddleRectangle() const -> Rectangle<int>
 {
     const int RIGHT_SIDE = m_stage.bounds().width;
     const int BOTTOM_SIDE = m_stage.bounds().height;
-    const int CENTERED_PADDLE_Y_COORDINATE =
-        BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
+    const int CENTERED_PADDLE_Y_COORDINATE = BOTTOM_SIDE / 2 - PADDLE_HEIGHT / 2;
     constexpr const int PADDLE_X_COORDINATE_MARGIN = 50;
-    auto rec = Rectangle<int>{
-        RIGHT_SIDE - PADDLE_X_COORDINATE_MARGIN - PADDLE_WIDTH,
-        CENTERED_PADDLE_Y_COORDINATE, PADDLE_WIDTH, PADDLE_HEIGHT};
+    auto rec = Rectangle<int>{RIGHT_SIDE - PADDLE_X_COORDINATE_MARGIN - PADDLE_WIDTH, CENTERED_PADDLE_Y_COORDINATE,
+                              PADDLE_WIDTH, PADDLE_HEIGHT};
     // rec.rotate(std::numbers::pi / 4);
     return rec;
 }
-constexpr Rectangle<int> Pong::topWallRectangle() const
+
+constexpr auto Pong::topWallRectangle() const -> Rectangle<int>
 {
     const int RIGHT_SIDE = m_stage.bounds().width;
     return Rectangle{0, 0, RIGHT_SIDE, WALL_HEIGHT};
 }
-constexpr Rectangle<int> Pong::bottomWallRectangle() const
+
+constexpr auto Pong::bottomWallRectangle() const -> Rectangle<int>
 {
     const int BOTTOM_SIDE = m_stage.bounds().height;
     const int RIGHT_SIDE = m_stage.bounds().width;
     return Rectangle{0, BOTTOM_SIDE - WALL_HEIGHT, RIGHT_SIDE, WALL_HEIGHT};
 }
-constexpr Rectangle<int> Pong::ballRectangle() const
+
+constexpr auto Pong::ballRectangle() const -> Rectangle<int>
 {
     const int RIGHT_SIDE = m_stage.bounds().width;
     const int BOTTOM_SIDE = m_stage.bounds().height;
-    return Rectangle<int>{RIGHT_SIDE / 2 - BALL_SIDE_LENGTH / 2,
-                          BOTTOM_SIDE / 2 - BALL_SIDE_LENGTH / 2,
+    return Rectangle<int>{RIGHT_SIDE / 2 - BALL_SIDE_LENGTH / 2, BOTTOM_SIDE / 2 - BALL_SIDE_LENGTH / 2,
                           BALL_SIDE_LENGTH, BALL_SIDE_LENGTH};
 }
-constexpr std::array<Ball<int>, 1> Pong::makeBalls() const
+
+constexpr auto Pong::makeBalls() const -> std::array<Ball<int>, 1>
 {
     Speed<double> ballInitialSpeed{1.5f, 1};
 

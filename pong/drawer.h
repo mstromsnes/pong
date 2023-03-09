@@ -28,7 +28,7 @@ struct Color
     constexpr void setBlue(uint8_t b) { b = b; };
     constexpr void setAlpha(uint8_t a) { a = a; };
 
-    constexpr uint8_t& operator[](int index)
+    constexpr auto operator[](int index) -> uint8_t&
     {
         switch (index)
         {
@@ -49,11 +49,11 @@ class GamePixmap
   public:
     constexpr GamePixmap(int width, int height, int channels)
         : num_channels{channels}, m_pixmap(width * height * num_channels, 0x00), m_width{width}, m_height{height} {};
-    constexpr int getChannelCount() const { return num_channels; };
-    constexpr int getWidth() const { return m_width; };
-    constexpr int getHeight() const { return m_height; };
-    constexpr int getRowSize() const { return m_width * num_channels; }
-    constexpr uint8_t& operator[](int idx) { return m_pixmap[idx]; }
+    constexpr auto getChannelCount() const { return num_channels; };
+    constexpr auto getWidth() const { return m_width; };
+    constexpr auto getHeight() const { return m_height; };
+    constexpr auto getRowSize() const { return m_width * num_channels; }
+    constexpr auto operator[](int idx) -> uint8_t& { return m_pixmap[idx]; }
     constexpr auto* data() const { return m_pixmap.data(); }
 
   private:
@@ -76,7 +76,7 @@ class Drawer
     constexpr void drawLineNormal(Line<T> line, Color color);
 
   private:
-    [[nodiscard]] constexpr static TriangleDrawParams findInitialConditions(const Triangle<int>& tri);
+    [[nodiscard]] constexpr static auto findInitialConditions(const Triangle<int>& tri) -> TriangleDrawParams;
     template <typename T>
     constexpr static auto findEndPoints(Line<T> line) -> std::tuple<int, int, int, int>;
 

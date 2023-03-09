@@ -15,7 +15,7 @@ class Quadrilateral
         sortCorners();
     }
     constexpr Quadrilateral(std::array<Position<T>, 4> corners) : m_corners{corners} { sortCorners(); }
-    constexpr std::vector<Triangle<T>> getTriangles() const
+    [[nodiscard]] constexpr auto getTriangles() const -> std::vector<Triangle<T>>
     {
         std::vector<Triangle<T>> triangles{};
         triangles.reserve(4);
@@ -43,7 +43,7 @@ class Quadrilateral
         }
         return triangles;
     }
-    constexpr std::array<Position<T>, 4> getVertices() const { return m_corners; }
+    [[nodiscard]] constexpr auto getVertices() const { return m_corners; }
 
   private:
     constexpr void sortCorners()
@@ -56,6 +56,7 @@ class Quadrilateral
             return a.y < b.y;
         });
     }
+
     std::array<Position<T>, 4> m_corners;
 };
 

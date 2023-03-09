@@ -1,4 +1,4 @@
-[[nodiscard]] constexpr TriangleDrawParams Drawer::findInitialConditions(const Triangle<int>& tri)
+[[nodiscard]] constexpr auto Drawer::findInitialConditions(const Triangle<int>& tri) -> TriangleDrawParams
 {
     auto vertices{tri.getVertices()};
     float xstart = vertices[0].x;

@@ -28,7 +28,7 @@ class Pong
 {
   public:
     constexpr Pong();
-    Paddles<int> getPaddles() { return m_paddles; };
+    auto getPaddles() -> Paddles<int> { return m_paddles; };
 
     constexpr void keyPress(KeyPress);
     constexpr void keyRelease(KeyPress);
@@ -50,12 +50,12 @@ class Pong
     std::vector<std::reference_wrapper<Renderable>> m_renderables;
     bool m_debugMode = false;
 
-    constexpr Rectangle<int> leftPaddleRectangle() const;
-    constexpr Rectangle<int> rightPaddleRectangle() const;
-    constexpr Rectangle<int> topWallRectangle() const;
-    constexpr Rectangle<int> bottomWallRectangle() const;
-    constexpr Rectangle<int> ballRectangle() const;
-    constexpr std::array<Ball<int>, 1> makeBalls() const;
+    constexpr auto leftPaddleRectangle() const -> Rectangle<int>;
+    constexpr auto rightPaddleRectangle() const -> Rectangle<int>;
+    constexpr auto topWallRectangle() const -> Rectangle<int>;
+    constexpr auto bottomWallRectangle() const -> Rectangle<int>;
+    constexpr auto ballRectangle() const -> Rectangle<int>;
+    constexpr auto makeBalls() const -> std::array<Ball<int>, 1>;
 
     constexpr void drawHitboxNormals(Collider<int>&);
     constexpr void moveBalls();

@@ -19,22 +19,17 @@ struct Speed
     template <std::floating_point N>
     void reflect(Vector2D<N> normal)
     {
-        // auto dotproduct = velocity * normal;
-        // auto vec = dotproduct * normal;
-        // auto scale = vec * 2.0f;
-        // auto result = velocity - scale;
-        // velocity = result;
         velocity = velocity - 2.0f * (velocity * normal) * normal;
     }
     void reset() { velocity = origVelocity; }
 };
 template <typename P, std::floating_point S>
-Position<P> operator+(Position<P> pos, Speed<S> speed)
+auto operator+(Position<P> pos, Speed<S> speed) -> Position<P>
 {
     return pos + speed.velocity;
 };
 template <typename P, std::floating_point S>
-Position<P> operator+=(Position<P>& pos, Speed<S> speed)
+auto operator+=(Position<P>& pos, Speed<S> speed) -> Position<P>
 {
     pos = pos + speed;
     return pos;
@@ -47,15 +42,16 @@ class Ball : public Collider<T>, public Renderable
 
     constexpr Ball(Rectangle<T> placement, Speed<double> speed)
         : m_placement{placement}, m_origPlacement{placement}, m_speed{speed}, m_origSpeed{speed} {};
-    void move(Stage& stage) { m_placement.translate(m_speed.velocity); }
-    void move_custom(Vector2D<double> direction) { m_placement.translate(direction); }
-    [[nodiscard]] const Position<T>& getPosition() const noexcept { return m_placement.pos(); };
-    [[nodiscard]] const Size<T>& getSize() const noexcept { return m_placement.size(); };
 
-    [[nodiscard]] const Speed<double>& getSpeed() const noexcept { return m_speed; };
+    [[nodiscard]] auto getPosition() const noexcept -> Position<T> const& { return m_placement.pos(); };
+    [[nodiscard]] auto getSize() const noexcept -> Size<T> const& { return m_placement.size(); };
+    [[nodiscard]] auto getSpeed() const noexcept -> Speed<double> const& { return m_speed; };
+    [[nodiscard]] auto getHitbox() const noexcept -> Rectangle<T> const& override { return m_placement; };
+
+    constexpr void move(Stage& stage) { m_placement.translate(m_speed.velocity); }
+    constexpr void move_custom(Vector2D<double> direction) { m_placement.translate(direction); }
 
     constexpr void collide(Vector2D<double> minimumTranslationVector) noexcept override;
-    [[nodiscard]] const Rectangle<T>& getHitbox() const noexcept override { return m_placement; };
     constexpr void reset();
     constexpr void setPlacement(Rectangle<T> placement);
     constexpr void setSpeed(Speed<double> speed);

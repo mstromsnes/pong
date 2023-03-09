@@ -4,7 +4,6 @@
 #include "renderable.h"
 #include "stage.h"
 
-#include <memory>
 enum class PaddleDirection { Up = 0, Down = 1, Left = 2, Right = 3 };
 
 template <typename T>
@@ -16,14 +15,14 @@ class Paddle : public Collider<T>, public Renderable
 
     constexpr void move(PaddleDirection dir, T speed);
 
-    [[nodiscard]] const Position<T>& getPosition() const noexcept { return m_placement.pos(); };
-    [[nodiscard]] const Size<T>& getSize() const noexcept { return m_placement.size(); };
+    [[nodiscard]] auto getPosition() const noexcept -> Position<T> const& { return m_placement.pos(); };
+    [[nodiscard]] auto getSize() const noexcept -> Size<T> const& { return m_placement.size(); };
+    [[nodiscard]] auto getHitbox() const noexcept -> Rectangle<T> const& override { return m_placement; };
 
-    [[nodiscard]] const Rectangle<T>& getHitbox() const noexcept override { return m_placement; };
     void collide(Vector2D<double>) noexcept override { m_collision = true; };
 
     constexpr void render(Stage& stage, bool debug = false) override;
-    constexpr bool collided() { return m_collision; };
+    [[nodiscard]] constexpr bool collided() { return m_collision; };
 
   private:
     bool m_collision = false;

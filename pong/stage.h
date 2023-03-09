@@ -9,8 +9,8 @@ class Stage
   public:
     constexpr Stage() { fillRectangle(Rectangle<int>(0, 0, WIDTH, HEIGHT), 0x00); };
 
-    [[nodiscard]] constexpr auto bounds() const -> Size<int> { return Size(WIDTH, HEIGHT); };
-    auto const& getPixmap() const { return m_pixmap; };
+    [[nodiscard]] constexpr auto bounds() const -> Size<int> { return Size<int>(WIDTH, HEIGHT); };
+    auto getPixmap() const -> GamePixmap const& { return m_pixmap; };
     constexpr void fillRectangle(Rectangle<int> placement, Color color)
     {
         Drawer drawer{m_pixmap};

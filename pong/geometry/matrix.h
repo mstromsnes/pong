@@ -11,6 +11,7 @@ struct Matrix3X3
         : xx{xx}, xy{xy}, xz{xz}, yx{yx}, yy{yy}, yz{yz}, zx{zx}, zy{zy}, zz{zz}
     {
     }
+
     T xx;
     T xy;
     T xz;
@@ -20,23 +21,24 @@ struct Matrix3X3
     T zx;
     T zy;
     T zz;
+
     constexpr Matrix3X3<T> operator-() const { return Matrix3X3<T>(-xx, -xy, -yx, -yy); };
     template <typename Phi>
-    constexpr static Matrix3X3<T> fromRotation(Phi rotation)
+    constexpr static auto fromRotation(Phi rotation) -> Matrix3X3<T>
     {
-        return Matrix3X3<T>(std::cos(rotation), -std::sin(rotation), std::sin(rotation), std::cos(rotation));
+        return Matrix3X3(std::cos(rotation), -std::sin(rotation), std::sin(rotation), std::cos(rotation));
     };
-    constexpr static Matrix3X3<T> fromTranslation(T&& x, T&& y) { return Matrix3X3<T>(1, 0, x, 0, 1, y, 0, 0, 1); };
+    constexpr static auto fromTranslation(T x, T y) -> Matrix3X3<T> { return Matrix3X3(1, 0, x, 0, 1, y, 0, 0, 1); };
     template <typename vec>
-    constexpr static Matrix3X3<T> fromTranslation(vec&& pos)
+    constexpr static auto fromTranslation(vec&& pos) -> Matrix3X3<T>
     {
         return fromTranslation(pos.x, pos.y);
     };
-    constexpr Matrix3X3<T> reverseTranslation() { return Matrix3X3(xx, xy, -xz, yx, yy, -yz, zx, zy, zz); }
-    constexpr Matrix3X3<T> reverseRotation() { return Matrix3X3(xx, -xy, xz, -yx, yy, -yz, zx, zy, zz); }
+    constexpr auto reverseTranslation() -> Matrix3X3<T> { return Matrix3X3(xx, xy, -xz, yx, yy, -yz, zx, zy, zz); }
+    constexpr auto reverseRotation() -> Matrix3X3<T> { return Matrix3X3(xx, -xy, xz, -yx, yy, -yz, zx, zy, zz); }
 };
 template <typename T>
-constexpr Matrix3X3<T> operator*(const Matrix3X3<T>& left, const Matrix3X3<T>& right)
+constexpr auto operator*(const Matrix3X3<T>& left, const Matrix3X3<T>& right) -> Matrix3X3<T>
 {
     return Matrix3X3<T>(left.xx * right.xx + left.xy * right.yx + left.xz * right.zx,
                         left.xx * right.xy + left.xy * right.yy + left.xz * right.zy,
