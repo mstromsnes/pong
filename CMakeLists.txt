@@ -44,7 +44,6 @@ qt_add_executable(pong WIN32
     main.cpp
     qtpong.cpp
     mainwindow.cpp
-    pong/pong.cpp
 )
 
 target_link_libraries(pong PRIVATE

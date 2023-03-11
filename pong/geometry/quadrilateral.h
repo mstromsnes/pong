@@ -6,21 +6,16 @@
 
 #include <algorithm>
 #include <vector>
-template <typename T> class Quadrilateral
+template <typename T>
+class Quadrilateral
 {
   public:
-    constexpr Quadrilateral(Position<T> a, Position<T> b, Position<T> c,
-                            Position<T> d)
-        : m_corners{a, b, c, d}
+    constexpr Quadrilateral(Position<T> a, Position<T> b, Position<T> c, Position<T> d) : m_corners{a, b, c, d}
     {
         sortCorners();
     }
-    constexpr Quadrilateral(std::array<Position<T>, 4> corners)
-        : m_corners{corners}
-    {
-        sortCorners();
-    }
-    constexpr std::vector<Triangle<T>> getTriangles() const
+    constexpr Quadrilateral(std::array<Position<T>, 4> corners) : m_corners{corners} { sortCorners(); }
+    [[nodiscard]] constexpr auto getTriangles() const -> std::vector<Triangle<T>>
     {
         std::vector<Triangle<T>> triangles{};
         triangles.reserve(4);
@@ -48,23 +43,20 @@ template <typename T> class Quadrilateral
         }
         return triangles;
     }
-    constexpr std::array<Position<T>, 4> getVertices() const
-    {
-        return m_corners;
-    }
+    [[nodiscard]] constexpr auto getVertices() const { return m_corners; }
 
   private:
     constexpr void sortCorners()
     {
-        std::sort(m_corners.begin(), m_corners.end(),
-                  [](const Position<T>& a, const Position<T>& b) -> bool {
-                      if (a.y == b.y)
-                      {
-                          return a.x < b.x;
-                      }
-                      return a.y < b.y;
-                  });
+        std::sort(m_corners.begin(), m_corners.end(), [](const Position<T>& a, const Position<T>& b) -> bool {
+            if (a.y == b.y)
+            {
+                return a.x < b.x;
+            }
+            return a.y < b.y;
+        });
     }
+
     std::array<Position<T>, 4> m_corners;
 };
 
