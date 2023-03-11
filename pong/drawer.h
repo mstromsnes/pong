@@ -4,6 +4,7 @@
 #include "geometry/triangle.h"
 
 #include <cmath>
+#include <ranges>
 #include <vector>
 
 struct TriangleDrawParams
@@ -48,17 +49,30 @@ class GamePixmap
 {
   public:
     constexpr GamePixmap(int width, int height, int channels)
-        : num_channels{channels}, m_pixmap(width * height * num_channels, 0x00), m_width{width}, m_height{height} {};
+        : num_channels{channels}, m_pixmap(width * height * num_channels, 0x00), m_width{width}, m_height{height},
+          m_clear_pixmap{clearStage(width, height, channels)} {};
     constexpr auto getChannelCount() const { return num_channels; };
     constexpr auto getWidth() const { return m_width; };
     constexpr auto getHeight() const { return m_height; };
     constexpr auto getRowSize() const { return m_width * num_channels; }
-    constexpr auto operator[](int idx) -> uint8_t& { return m_pixmap[idx]; }
-    constexpr auto* data() const { return m_pixmap.data(); }
+    auto operator[](int idx) -> uint8_t& { return m_pixmap[idx]; }
+    auto* data() const { return m_pixmap.data(); }
+    constexpr void clear() { m_pixmap = m_clear_pixmap; }
+    constexpr auto clearStage(int width, int height, int channels) -> std::vector<uint8_t>
+    {
+        auto stage = std::vector<uint8_t>(width * height * num_channels, 0x00);
+        auto view = std::ranges::subrange(stage.begin() + 3, stage.end()) | std::ranges::views::stride(4);
+        for (auto& alpha : view)
+        {
+            alpha = 0xff;
+        }
+        return stage;
+    }
 
   private:
     int num_channels;
     std::vector<uint8_t> m_pixmap;
+    const std::vector<uint8_t> m_clear_pixmap;
     int m_width;
     int m_height;
 };
@@ -68,12 +82,14 @@ class Drawer
     constexpr Drawer(GamePixmap& pixmap) : m_pixmap{pixmap} {}
     constexpr void drawHorizontalLine(int xs, int xe, int y, Color color);
     constexpr void drawTriangle(Triangle<int> triangle, Color color);
-    template <typename T>
-    constexpr void drawLine(Line<T> line, Color color);
     constexpr void drawVerticalLine(int x, int y0, int y1, Color color);
     constexpr void paintPixel(int x, int y, Color color);
+    constexpr void clear() { m_pixmap.clear(); };
+
     template <typename T>
     constexpr void drawLineNormal(Line<T> line, Color color);
+    template <typename T>
+    constexpr void drawLine(Line<T> line, Color color);
 
   private:
     [[nodiscard]] constexpr static auto findInitialConditions(const Triangle<int>& tri) -> TriangleDrawParams;
