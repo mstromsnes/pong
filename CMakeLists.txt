@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 project(pong VERSION 1.0.0 LANGUAGES CXX)
 
 enable_testing()
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE "C:/Projects/llvm-project/build/bin/include-what-you-use.exe")
 # Set path to our custom CMAKE scripts
