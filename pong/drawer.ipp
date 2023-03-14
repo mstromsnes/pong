@@ -120,10 +120,10 @@ constexpr void Drawer::paintPixel(int x, int y, Color color)
 {
     if (x < 0 || x >= m_pixmap.getWidth() || y < 0 || y >= m_pixmap.getHeight())
         return;
+    auto idx = y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount();
     for (int j = 0; j < m_pixmap.getChannelCount(); j++)
     {
-        auto idx = y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount() + j;
-        m_pixmap[idx] = color[j];
+        m_pixmap[idx + j] = color[j];
     }
 }
 

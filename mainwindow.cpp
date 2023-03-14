@@ -7,7 +7,7 @@ MainWindow::MainWindow(const Stage& stage, QtPong* pong) : QMainWindow(nullptr),
     const auto& pixmap = stage.getPixmap();
     auto scene = stage.bounds();
     const auto data = pixmap.data();
-    m_pixmapScene = QImage(data, scene.width, scene.height, QImage::Format_RGBA8888);
+    m_pixmapScene = QImage(data, scene.width, scene.height, QImage::Format_RGB32);
     m_centralWidget.setMinimumSize(scene.width, scene.height);
     setCentralWidget(&m_centralWidget);
 }

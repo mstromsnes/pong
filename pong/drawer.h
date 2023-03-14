@@ -18,32 +18,20 @@ struct TriangleDrawParams
 };
 struct Color
 {
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : r{r}, g{g}, b{b}, a{a} {};
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b) : r{r}, g{g}, b{b}, a{0xff} {};
-    uint8_t r, g, b, a;
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : m_color({a, r, g, b}) {}
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b) : m_color({0xff, r, g, b}) {}
+    constexpr Color(uint8_t grey) : m_color({0xff, grey, grey, grey}) {}
 
-    constexpr Color(uint8_t grey) : r{grey}, g{grey}, b{grey}, a{0xff} {};
+    std::array<uint8_t, 4> m_color;
 
-    constexpr void setRed(uint8_t r) { r = r; };
-    constexpr void setGreen(uint8_t g) { g = g; };
-    constexpr void setBlue(uint8_t b) { b = b; };
-    constexpr void setAlpha(uint8_t a) { a = a; };
+    constexpr void setAlpha(uint8_t a) { m_color[0] = a; };
+    constexpr void setRed(uint8_t r) { m_color[1] = r; };
+    constexpr void setGreen(uint8_t g) { m_color[2] = g; };
+    constexpr void setBlue(uint8_t b) { m_color[3] = b; };
 
-    constexpr auto operator[](int index) -> uint8_t&
-    {
-        switch (index)
-        {
-        case 0:
-            return r;
-        case 1:
-            return g;
-        case 2:
-            return b;
-        case 3:
-        default:
-            return a;
-        }
-    }
+    constexpr auto operator[](int index) -> uint8_t& { return m_color[index]; }
+    constexpr auto begin() { return m_color.begin(); }
+    constexpr auto end() { return m_color.end(); }
 };
 class GamePixmap
 {
