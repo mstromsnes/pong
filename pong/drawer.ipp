@@ -121,9 +121,12 @@ constexpr void Drawer::paintPixel(int x, int y, Color color)
     if (x < 0 || x >= m_pixmap.getWidth() || y < 0 || y >= m_pixmap.getHeight())
         return;
     auto idx = y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount();
-    for (int j = 0; j < m_pixmap.getChannelCount(); j++)
+    if constexpr (std::is_trivially_copyable<Color>())
+        std::memcpy(&m_pixmap[idx], &color, sizeof(color));
+    else
     {
-        m_pixmap[idx + j] = color[j];
+        for (int j = 0; j < m_pixmap.getChannelCount(); j++)
+            m_pixmap[idx + j] = color[j];
     }
 }
 
