@@ -3,6 +3,8 @@
 #include "drawer.h"
 #include "geometry.h"
 
+#include <algorithm>
+#include <execution>
 class Stage
 {
   public:
@@ -13,9 +15,15 @@ class Stage
     constexpr void fillRectangle(Rectangle<int> placement, Color color)
     {
         Drawer drawer{m_pixmap};
-        for (auto const& triangle : placement.getDrawables())
+        auto triangles = placement.getDrawables();
+        auto draw_fn = [&](auto triangle) { drawer.drawTriangle(triangle, color); };
+        if (std::is_constant_evaluated())
         {
-            drawer.drawTriangle(triangle, color);
+            std::for_each(triangles.begin(), triangles.end(), draw_fn);
+        }
+        else
+        {
+            std::for_each(std::execution::unseq, triangles.begin(), triangles.end(), draw_fn);
         }
     };
     template <typename T>
