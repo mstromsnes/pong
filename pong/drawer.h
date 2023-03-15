@@ -18,16 +18,16 @@ struct TriangleDrawParams
 };
 struct Color
 {
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : m_color({a, r, g, b}) {}
-    constexpr Color(uint8_t r, uint8_t g, uint8_t b) : m_color({0xff, r, g, b}) {}
-    constexpr Color(uint8_t grey) : m_color({0xff, grey, grey, grey}) {}
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : m_color({b, g, r, a}) {}
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b) : m_color({b, g, r, 0xff}) {}
+    constexpr Color(uint8_t grey) : m_color({grey, grey, grey, 0xff}) {}
 
     std::array<uint8_t, 4> m_color;
 
-    constexpr void setAlpha(uint8_t a) { m_color[0] = a; };
-    constexpr void setRed(uint8_t r) { m_color[1] = r; };
-    constexpr void setGreen(uint8_t g) { m_color[2] = g; };
-    constexpr void setBlue(uint8_t b) { m_color[3] = b; };
+    constexpr void setBlue(uint8_t b) { m_color[0] = b; };
+    constexpr void setGreen(uint8_t g) { m_color[1] = g; };
+    constexpr void setRed(uint8_t r) { m_color[2] = r; };
+    constexpr void setAlpha(uint8_t a) { m_color[3] = a; };
 
     constexpr auto operator[](int index) -> uint8_t& { return m_color[index]; }
     constexpr auto begin() { return m_color.begin(); }
