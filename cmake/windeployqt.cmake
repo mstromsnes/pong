@@ -4,6 +4,9 @@ function(windeployqt target)
     # - after build, we have a bin/lib for analyzing qt dependencies
     # - we run windeployqt on target and deploy Qt libs
     string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+    if(${BUILD_TYPE} STREQUAL "relwithdebinfo")
+    set(BUILD_TYPE "release")
+    endif()
 
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${Qt6_DIR}/../../../bin/windeployqt.exe"
