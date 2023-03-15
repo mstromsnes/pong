@@ -31,8 +31,8 @@ class Stage
     }
 
   private:
-    const int WIDTH = 640;
-    const int HEIGHT = 360;
+    const int WIDTH = 1280 * 1;
+    const int HEIGHT = 700 * 1;
     const int NUM_CHANNELS = 4;
     GamePixmap m_pixmap = GamePixmap(WIDTH, HEIGHT, NUM_CHANNELS);
 };

@@ -14,7 +14,7 @@ MainWindow::MainWindow(const Stage& stage, QtPong* pong) : QMainWindow(nullptr),
 
 void MainWindow::renderPong()
 {
-    m_centralWidget.setPixmap(QPixmap::fromImage(m_pixmapScene).scaled(width(), height(), Qt::KeepAspectRatio));
+    m_centralWidget.setPixmap(QPixmap::fromImage(m_pixmapScene));
     update();
 }
 
