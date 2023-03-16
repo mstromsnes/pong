@@ -3,9 +3,9 @@
 #include <algorithm>
 
 constexpr Pong::Pong()
-    : m_paddles{Paddle<int>{leftPaddleRectangle()}, Paddle<int>{rightPaddleRectangle()}},
-      m_walls{Paddle<int>{topWallRectangle()},
-              Paddle<int>{
+    : m_paddles{Paddle<pos_type>{leftPaddleRectangle()}, Paddle<pos_type>{rightPaddleRectangle()}},
+      m_walls{Paddle<pos_type>{topWallRectangle()},
+              Paddle<pos_type>{
                   bottomWallRectangle(),
               }},
       m_balls{makeBalls()}
@@ -50,8 +50,8 @@ constexpr void Pong::collision()
     for (auto& ball : m_balls)
     {
         {
-            auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_paddles.left.getHitbox(), ball.getSpeed().velocity);
+            auto [overlap, minimumTranslationVector] = Collider<pos_type>::overlap<4, 4>(
+                ball.getHitbox(), m_paddles.left.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -59,8 +59,8 @@ constexpr void Pong::collision()
             }
         }
         {
-            auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_paddles.right.getHitbox(), ball.getSpeed().velocity);
+            auto [overlap, minimumTranslationVector] = Collider<pos_type>::overlap<4, 4>(
+                ball.getHitbox(), m_paddles.right.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -69,7 +69,7 @@ constexpr void Pong::collision()
         }
         {
             auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_walls.top.getHitbox(), ball.getSpeed().velocity);
+                Collider<pos_type>::overlap<4, 4>(ball.getHitbox(), m_walls.top.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -77,8 +77,8 @@ constexpr void Pong::collision()
             }
         }
         {
-            auto [overlap, minimumTranslationVector] =
-                Collider<int>::overlap<4, 4>(ball.getHitbox(), m_walls.bottom.getHitbox(), ball.getSpeed().velocity);
+            auto [overlap, minimumTranslationVector] = Collider<pos_type>::overlap<4, 4>(
+                ball.getHitbox(), m_walls.bottom.getHitbox(), ball.getSpeed().velocity);
             if (overlap)
             {
                 ball.collide(minimumTranslationVector);
@@ -180,16 +180,16 @@ constexpr void Pong::moveBall(KeyPress press)
     switch (press)
     {
     case KeyPress::i:
-        m_balls[0].move_custom(-constants::YUnitVector<double>);
+        m_balls[0].move_custom(-constants::YUnitVector<pos_type>);
         break;
     case KeyPress::j:
-        m_balls[0].move_custom(-constants::XUnitVector<double>);
+        m_balls[0].move_custom(-constants::XUnitVector<pos_type>);
         break;
     case KeyPress::k:
-        m_balls[0].move_custom(constants::YUnitVector<double>);
+        m_balls[0].move_custom(constants::YUnitVector<pos_type>);
         break;
     case KeyPress::l:
-        m_balls[0].move_custom(constants::XUnitVector<double>);
+        m_balls[0].move_custom(constants::XUnitVector<pos_type>);
         break;
     default:
         break;
@@ -205,11 +205,11 @@ constexpr void Pong::updatePixmap()
     }
 }
 
-constexpr void Pong::drawHitboxNormals(Collider<int>& collider)
+constexpr void Pong::drawHitboxNormals(Collider<pos_type>& collider)
 {
     auto vert = collider.getHitbox().verticesCW();
-    auto lines = std::array<Line<int>, 4>{Line<int>(vert[0], vert[3]), Line<int>(vert[1], vert[0]),
-                                          Line<int>(vert[2], vert[1]), Line<int>(vert[3], vert[2])};
+    auto lines = std::array<Line<pos_type>, 4>{Line<pos_type>(vert[0], vert[3]), Line<pos_type>(vert[1], vert[0]),
+                                               Line<pos_type>(vert[2], vert[1]), Line<pos_type>(vert[3], vert[2])};
     for (auto line : lines)
     {
         m_stage.drawNormal(line, Color{0x00, 0xff, 0xff});
@@ -280,9 +280,9 @@ constexpr auto Pong::ballRectangle() const -> Rectangle<int>
                           BALL_SIDE_LENGTH, BALL_SIDE_LENGTH};
 }
 
-constexpr auto Pong::makeBalls() const -> std::array<Ball<int>, 1>
+constexpr auto Pong::makeBalls() const -> std::array<Ball<pos_type>, 1>
 {
     Speed<double> ballInitialSpeed{1.5f, 1};
 
-    return std::array{Ball<int>{ballRectangle(), ballInitialSpeed}};
+    return std::array{Ball<pos_type>{ballRectangle(), ballInitialSpeed}};
 }

@@ -162,6 +162,40 @@ class Rectangle : public ConvexPolygon<T, 4>
     {
         return std::array<Position<T>, 4>{topLeft(), topRight(), bottomRight(), bottomLeft()};
     }
+    template <std::signed_integral I>
+    [[nodiscard]] constexpr operator Rectangle<I>() const
+    {
+        if constexpr (std::is_integral<T>())
+        {
+            Rectangle<I> rec{unrotatedPos.x, unrotatedPos.y, m_size.width, m_size.height};
+            rec.rotate(orientation);
+            return rec;
+        }
+        else
+        {
+            Rectangle<I> rec{std::lround(unrotatedPos.x), std::lround(unrotatedPos.y), std::lround(m_size.width),
+                             std::lround(m_size.height)};
+            rec.rotate(orientation);
+            return rec;
+        }
+    }
+    template <std::floating_point F>
+    [[nodiscard]] constexpr operator Rectangle<F>() const
+    {
+        if constexpr (std::is_integral<T>())
+        {
+            Rectangle<F> rec{static_cast<F>(unrotatedPos.x), static_cast<F>(unrotatedPos.y),
+                             static_cast<F>(m_size.width), static_cast<F>(m_size.height)};
+            rec.rotate(orientation);
+            return rec;
+        }
+        else
+        {
+            Rectangle<F> rec{unrotatedPos.x, unrotatedPos.y, m_size.width, m_size.height};
+            rec.rotate(orientation);
+            return rec;
+        }
+    }
 
   private:
     [[nodiscard]] constexpr auto findExtremeHelper(std::function<bool(Position<T>)> predicate) const -> Position<T>
