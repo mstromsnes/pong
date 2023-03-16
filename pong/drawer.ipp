@@ -75,11 +75,11 @@ constexpr void Drawer::drawTriangle(Triangle<int> triangle, Color color)
     }
 }
 
+// Bresenham line drawing algorithm that reverts to naive for axis
+// aligned lines.
 template <typename T>
 constexpr void Drawer::drawLine(Line<T> line, Color color)
 {
-    // Bresenham line drawing algorithm that reverts to naive for axis
-    // aligned lines.
     auto [x0, x1, y0, y1] = findEndPoints(line);
     if (x1 < x0)
     {
@@ -120,17 +120,17 @@ constexpr void Drawer::paintPixel(int x, int y, Color color)
 {
     if (x < 0 || x >= m_pixmap.getWidth() || y < 0 || y >= m_pixmap.getHeight())
         return;
+    auto idx = y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount();
     for (int j = 0; j < m_pixmap.getChannelCount(); j++)
     {
-        auto idx = y * m_pixmap.getRowSize() + x * m_pixmap.getChannelCount() + j;
-        m_pixmap[idx] = color[j];
+        m_pixmap[idx + j] = color[j];
     }
 }
 
-template <typename T>
-constexpr void Drawer::drawLineNormal(Line<T> line, Color color)
 // Draws a line normal to the line given, starting at the middle of the line
 // given.
+template <typename T>
+constexpr void Drawer::drawLineNormal(Line<T> line, Color color)
 {
     auto normalVec = line.normal();
     auto length = std::min<double>(line.length(), 10.0f);
